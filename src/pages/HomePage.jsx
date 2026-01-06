@@ -1,5 +1,5 @@
 import SEO from '../components/SEO';
-import { ArrowRight, Sparkles, Flame, Clock, ArrowUpRight, Play, Instagram, Truck, RotateCcw, ShieldCheck, Headphones, Mail } from 'lucide-react';
+import { ArrowRight, Sparkles, Flame, Clock, ArrowUpRight, Play, Instagram, Truck, RotateCcw, ShieldCheck, Headphones, Mail, User, MessageSquare, Send } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import heroFashion from '../assets/hero-fashion.png';
 import sneakerDrop from '../assets/sneaker-drop.png';
@@ -83,9 +83,9 @@ export default function HomePage() {
                     ))}
                 </div>
             </section>
-                      
-             {/* Trust Bar (Benefits Section) */}
-             
+
+            {/* Trust Bar (Benefits Section) */}
+
             <section className="bg-gray-50 border-b border-gray-100 py-6">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
                     <div className="flex flex-wrap justify-between gap-6 md:gap-4">
@@ -337,32 +337,56 @@ export default function HomePage() {
                         ))}
                     </div>
 
-                    {/* Drip Club Newsletter Section */}
-                    <div className="mt-24 relative rounded-[3.5rem] bg-black p-10 md:p-20 overflow-hidden shadow-2xl border border-white/5">
+                    {/* Direct Drip Contact Section */}
+                    {/* <div className="mt-24 relative rounded-[3.5rem] bg-black p-10 md:p-20 overflow-hidden shadow-2xl border border-white/5">
                         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-600/10 blur-[120px] rounded-full -mr-40 -mt-40 animate-pulse"></div>
                         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-purple-600/10 blur-[100px] rounded-full -ml-40 -mb-40"></div>
-                        <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-16">
+
+                        <div className="relative z-10 flex flex-col lg:flex-row items-start justify-between gap-16">
                             <div className="max-w-xl text-center lg:text-left">
                                 <span className="inline-flex items-center px-5 py-2 rounded-full bg-white/5 text-white text-[10px] font-black uppercase tracking-[0.3em] mb-8 border border-white/10 shadow-lg">
-                                    <Sparkles className="w-3 h-3 mr-3 text-yellow-500" /> Member Only Access
+                                    <Sparkles className="w-3 h-3 mr-3 text-red-500" /> Concierge Service
                                 </span>
-                                <h2 className="text-5xl md:text-8xl font-black text-white uppercase tracking-tighter italic mb-8 leading-[0.85]">JOIN THE <br /><span className="text-transparent stroke-text" style={{ WebkitTextStroke: '1px white' }}>DRIP</span> CLUB</h2>
-                                <p className="text-gray-400 text-sm md:text-lg font-medium max-w-sm mx-auto lg:mx-0 tracking-wide mb-10 leading-relaxed">Early access. Private sales. The Aesthetic Journal.</p>
-                                <p className="text-red-500 font-black tracking-[0.4em] text-[10px] uppercase">No noise. Just drip.</p>
-                            </div>
-                            <div className="w-full max-w-md">
-                                <form className="flex flex-col gap-5" onSubmit={(e) => e.preventDefault()}>
-                                    <div className="relative group">
-                                        <Mail className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-white transition-colors" />
-                                        <input type="email" placeholder="email@example.com" className="w-full bg-white/5 border border-white/10 rounded-3xl py-6 pl-16 pr-8 text-white placeholder-gray-600 focus:outline-none focus:border-white/20 focus:bg-white/[0.07] transition-all text-sm font-bold tracking-widest shadow-inner uppercase" />
+                                <h2 className="text-5xl md:text-8xl font-black text-white uppercase tracking-tighter italic mb-8 leading-[0.85]">DIRECT <br /><span className="text-transparent stroke-text" style={{ WebkitTextStroke: '1px white' }}>DRIP</span></h2>
+                                <p className="text-gray-400 text-sm md:text-lg font-medium max-w-sm mx-auto lg:mx-0 tracking-wide mb-10 leading-relaxed">Questions about a drop? Sizing issues? Just want to vibe? Reach out to our community leads.</p>
+
+                                <div className="hidden lg:flex flex-col gap-4 mt-6">
+                                    <div className="flex items-center space-x-4 text-white/60 hover:text-white transition-colors cursor-pointer group">
+                                        <div className="p-3 bg-white/5 rounded-xl border border-white/10 group-hover:border-red-500/50 group-hover:bg-red-500/10 transition-all">
+                                            <Instagram className="w-5 h-5" />
+                                        </div>
+                                        <span className="text-xs font-black uppercase tracking-widest">@quickdrip_hq</span>
                                     </div>
-                                    <button className="w-full bg-white text-black font-black uppercase tracking-[0.3em] py-6 rounded-3xl hover:bg-red-500 hover:text-white transition-all transform active:scale-95 flex items-center justify-center gap-4 text-xs shadow-2xl">
-                                        GET ACCESS <ArrowRight className="w-5 h-5" />
+                                    <div className="flex items-center space-x-4 text-white/60 hover:text-white transition-colors cursor-pointer group">
+                                        <div className="p-3 bg-white/5 rounded-xl border border-white/10 group-hover:border-red-500/50 group-hover:bg-red-500/10 transition-all">
+                                            <Mail className="w-5 h-5" />
+                                        </div>
+                                        <span className="text-xs font-black uppercase tracking-widest">hello@quickdrip.io</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="w-full max-w-xl">
+                                <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={(e) => e.preventDefault()}>
+                                    <div className="relative group col-span-1">
+                                        <User className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-red-500 transition-colors w-4 h-4" />
+                                        <input type="text" placeholder="YOUR NAME" className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-14 pr-6 text-white placeholder-gray-600 focus:outline-none focus:border-red-500/40 focus:bg-white/[0.08] transition-all text-xs font-black tracking-widest uppercase" />
+                                    </div>
+                                    <div className="relative group col-span-1">
+                                        <Mail className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-red-500 transition-colors w-4 h-4" />
+                                        <input type="email" placeholder="EMAIL ADDRESS" className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-14 pr-6 text-white placeholder-gray-600 focus:outline-none focus:border-red-500/40 focus:bg-white/[0.08] transition-all text-xs font-black tracking-widest uppercase" />
+                                    </div>
+                                    <div className="relative group col-span-full">
+                                        <MessageSquare className="absolute left-6 top-6 text-gray-500 group-focus-within:text-red-500 transition-colors w-4 h-4" />
+                                        <textarea rows="4" placeholder="HOW CAN WE HELP?" className="w-full bg-white/5 border border-white/10 rounded-3xl py-6 pl-14 pr-6 text-white placeholder-gray-600 focus:outline-none focus:border-red-500/40 focus:bg-white/[0.08] transition-all text-xs font-black tracking-widest uppercase resize-none"></textarea>
+                                    </div>
+                                    <button className="col-span-full bg-white text-black font-black uppercase tracking-[0.3em] py-6 rounded-3xl hover:bg-red-500 hover:text-white transition-all transform active:scale-95 flex items-center justify-center gap-4 text-xs shadow-2xl group">
+                                        SEND DRIP <Send className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                                     </button>
                                 </form>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </section>
 
