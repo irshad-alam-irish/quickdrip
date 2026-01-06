@@ -1,13 +1,21 @@
 import SEO from '../components/SEO';
-import { ArrowRight, Sparkles, Flame, Clock, ArrowUpRight, Instagram } from 'lucide-react';
+import { ArrowRight, Sparkles, Flame, Clock, ArrowUpRight, Play, Instagram } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import heroFashion from '../assets/hero-fashion.png';
 import sneakerDrop from '../assets/sneaker-drop.png';
 import abstractBg from '../assets/abstract-bg.png';
+import React from 'react';
 
 import ProductCard from '../components/ProductCard';
+import { menProducts } from '../data/products-men';
+import { womenProducts } from '../data/products-women';
 
 export default function HomePage() {
+    // Featured products - mix from different categories
+    const featuredProducts = [
+        ...menProducts.slice(0, 3),
+        ...womenProducts.slice(0, 3)
+    ];
     // Dummy Data for Drops
     const featuredDrops = [
         { id: 1, name: 'Cyber Puffer V2', price: '₹8,999', category: 'Outerwear', image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=800&auto=format&fit=crop', isNew: true },
@@ -92,7 +100,7 @@ export default function HomePage() {
 
                     {/* Secondary Card 1 (Top Right - 4 cols) - Abstract Promo */}
                     <div className="h-[300px] md:h-auto md:col-span-4 md:row-span-1 relative group rounded-3xl overflow-hidden cursor-pointer bg-black">
-                        <img src={abstractBg} alt="Abstract Texture" className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                        <img src="https://images.unsplash.com/photo-1557672172-298e090bd0f1?q=80&w=800&auto=format&fit=crop" alt="Abstract Texture" className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
                         <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-6">
                             <h3 className="text-3xl font-black text-white italic tracking-tighter mb-1 relative z-10">
                                 FLAT 40% OFF
@@ -135,11 +143,11 @@ export default function HomePage() {
                     <div className="flex flex-wrap justify-center md:justify-between items-center gap-8 md:gap-12">
                         {[
                             { name: 'H&M', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/H%26M-Logo.svg/1200px-H%26M-Logo.svg.png' },
-                            { name: 'The Souled Store', url: 'https://logo.clearbit.com/thesouledstore.com' },
-                            { name: 'Rare Rabbit', url: 'https://logo.clearbit.com/thehouseofrare.com' },
-                            { name: 'Louis Philippe', url: 'https://logo.clearbit.com/louisphilippe.com' },
-                            { name: 'Manyavar', url: 'https://logo.clearbit.com/manyavar.com' },
-                            { name: 'Snitch', url: 'https://logo.clearbit.com/snitch.co.in' }
+                            { name: 'Levi\'s', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Levi_Strauss_%26_Co._logo.svg/1200px-Levi_Strauss_%26_Co._logo.svg.png' },
+                            { name: 'Zara', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Zara_Logo.svg/1200px-Zara_Logo.svg.png' },
+                            { name: 'Nike', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Logo_NIKE.svg/1200px-Logo_NIKE.svg.png' },
+                            { name: 'Adidas', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Adidas_Logo.svg/1200px-Adidas_Logo.svg.png' },
+                            { name: 'Puma', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Puma-Logo.svg/1200px-Puma-Logo.svg.png' }
                         ].map((brand, i) => (
                             <div key={i} className="group cursor-pointer flex items-center justify-center p-2 transition-all duration-300 hover:scale-110">
                                 <img
@@ -147,9 +155,14 @@ export default function HomePage() {
                                     alt={brand.name}
                                     className="h-8 md:h-12 w-auto object-contain"
                                     onError={(e) => {
-                                        e.target.style.display = 'none';
-                                        e.target.parentNode.innerText = brand.name;
-                                        e.target.parentNode.classList.add('text-lg', 'font-black', 'uppercase', 'text-gray-400');
+                                        if (e.target) {
+                                            e.target.style.display = 'none';
+                                            const parent = e.target.parentNode;
+                                            if (parent) {
+                                                parent.innerText = brand.name;
+                                                parent.classList.add('text-lg', 'font-black', 'uppercase', 'text-gray-400');
+                                            }
+                                        }
                                     }}
                                 />
                             </div>
@@ -222,9 +235,9 @@ export default function HomePage() {
                             <div key={i} className="relative group h-[400px] overflow-hidden rounded-2xl cursor-pointer">
                                 <img src={cat.img} alt={cat.name} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                                 <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-300"></div>
-                                <div className="absolute bottom-6 left-6 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                                <div className="absolute bottom-6 left-6 text-white transition-transform duration-300">
                                     <h3 className="text-2xl font-black uppercase tracking-tighter mb-2">{cat.name}</h3>
-                                    <span className="inline-flex items-center text-xs font-bold bg-white text-black px-4 py-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <span className="inline-flex items-center text-xs font-bold bg-white text-black px-4 py-2 rounded-full transition-opacity duration-300">
                                         EXPLORE <ArrowRight className="ml-2 w-3 h-3" />
                                     </span>
                                 </div>
@@ -237,6 +250,21 @@ export default function HomePage() {
             {/* Social Proof (Seen on You) */}
             <section className="py-16 bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+                    {/* Featured Drops */}
+                    <div className="mb-20">
+                        <div className="flex justify-between items-center mb-8">
+                            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter">Featured Drops</h2>
+                            <button className="text-sm font-bold uppercase tracking-wider hover:underline">View All</button>
+                        </div>
+                        <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory no-scrollbar">
+                            {featuredProducts.map((product, i) => (
+                                <div key={i} className="flex-shrink-0 w-[240px] md:w-[280px] snap-start">
+                                    <ProductCard product={product} />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
                     <div className="text-center mb-12">
                         <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-4">
                             SEEN ON <span className="text-red-500">YOU</span>

@@ -3,7 +3,7 @@ import { ShoppingBag, Heart, Star, Eye } from 'lucide-react';
 
 const ProductCard = ({ product }) => {
     return (
-        <div className="group relative min-w-[280px] md:min-w-[300px] snap-start cursor-pointer">
+        <div className="group relative w-full cursor-pointer">
             {/* Image Container with Hover Zoom & Overlay */}
             <div className="aspect-[3/4] w-full overflow-hidden rounded-xl bg-gray-100 relative shadow-sm group-hover:shadow-xl transition-all duration-500">
                 <img
