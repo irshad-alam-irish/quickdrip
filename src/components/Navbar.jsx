@@ -91,12 +91,11 @@ export default function Navbar() {
                         <div className="hidden lg:flex space-x-8 items-center h-full">
                             {navigation.categories.map((category) => (
                                 <div key={category.id} className="group flex items-center h-full border-b-4 border-transparent hover:border-red-500 transition-all duration-200">
-                                    <Link
-                                        to={`/ products / ${category.id} `}
-                                        className="text-[14px] font-bold text-gray-700 group-hover:text-primary tracking-wide uppercase px-1 py-2 lg:font-semibold"
+                                    <div
+                                        className="text-[14px] font-bold text-gray-700 group-hover:text-primary tracking-wide uppercase px-1 py-2 lg:font-semibold cursor-pointer"
                                     >
                                         {category.name}
-                                    </Link>
+                                    </div>
 
                                     {/* Mega Menu Popover */}
                                     <div className="invisible group-hover:visible opacity-0 group-hover:opacity-100 absolute left-0 top-full w-full bg-white shadow-lg border-t border-gray-100 transition-all duration-200 ease-in-out z-50">
