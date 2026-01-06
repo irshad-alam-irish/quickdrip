@@ -17,6 +17,7 @@ export default function Navbar() {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchExpanded, setSearchExpanded] = useState(false);
     const [searchResults, setSearchResults] = useState([]);
+    const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [searchHistory, setSearchHistory] = useState(() => {
         const saved = localStorage.getItem('searchHistory');
         return saved ? JSON.parse(saved) : [];
@@ -138,12 +139,14 @@ export default function Navbar() {
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
+                                onFocus={() => setIsSearchFocused(true)}
+                                onBlur={() => setTimeout(() => setIsSearchFocused(false), 200)}
                                 className="block w-full pl-10 pr-3 py-2.5 border border-gray-100 rounded-md leading-5 bg-gray-50 text-gray-900 placeholder-gray-400 focus:outline-none focus:placeholder-gray-300 focus:bg-white focus:border-gray-200 text-sm transition-all duration-200"
                                 placeholder="Search for products, brands and more"
                             />
 
                             {/* Search Suggestions & History Dropdown */}
-                            {(searchResults.length > 0 || (searchHistory.length > 0 && searchQuery.trim().length === 0)) && (
+                            {isSearchFocused && (searchResults.length > 0 || (searchHistory.length > 0 && searchQuery.trim().length === 0)) && (
                                 <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto">
                                     {/* Recent Searches Header */}
                                     {searchHistory.length > 0 && searchQuery.trim().length === 0 && (

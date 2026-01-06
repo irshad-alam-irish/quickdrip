@@ -1,5 +1,5 @@
 import SEO from '../components/SEO';
-import { ArrowRight, Sparkles, Flame, Clock, ArrowUpRight, Play, Instagram } from 'lucide-react';
+import { ArrowRight, Sparkles, Flame, Clock, ArrowUpRight, Play, Instagram, Truck, RotateCcw, ShieldCheck, Headphones, Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import heroFashion from '../assets/hero-fashion.png';
 import sneakerDrop from '../assets/sneaker-drop.png';
@@ -49,31 +49,65 @@ export default function HomePage() {
             </div>
 
             {/* Story Categories (Myntra/Insta Style) */}
-            <section className="bg-white py-6 border-b border-gray-100 overflow-x-auto no-scrollbar">
-                <div className="max-w-7xl mx-auto px-4 flex space-x-6 md:justify-center min-w-max">
+            <section className="bg-white py-8 border-b border-gray-100 overflow-x-auto no-scrollbar">
+                <div className="max-w-7xl mx-auto px-4 flex space-x-8 md:justify-center min-w-max">
                     {[
-                        { name: 'New In', color: 'ring-red-500', img: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=200&auto=format&fit=crop' },
-                        { name: 'Best Sellers', color: 'ring-purple-500', img: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?q=80&w=200&auto=format&fit=crop' },
-                        { name: 'Oversized', color: 'ring-blue-500', img: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=200&auto=format&fit=crop' },
-                        { name: 'Sneakers', color: 'ring-green-500', img: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=200&auto=format&fit=crop' },
-                        { name: 'Accessories', color: 'ring-pink-500', img: 'https://images.unsplash.com/photo-1611095973763-414019e72400?q=80&w=200&auto=format&fit=crop' },
-                        { name: 'Sale', color: 'ring-yellow-500', img: 'https://images.unsplash.com/photo-1607083206968-13611e3d76db?q=80&w=200&auto=format&fit=crop' }
-                    ].map((story, i) => (
-                        <div key={i} className="flex flex-col items-center space-y-2 cursor-pointer group">
-                            <div className={`w-16 h-16 md:w-20 md:h-20 rounded-full p-1 bg-white ring-2 ${story.color} ring-offset-2 group-hover:scale-105 transition-transform duration-300`}>
-                                <div className="w-full h-full rounded-full bg-gray-100 overflow-hidden relative">
-                                    <img src={story.img} alt={story.name} className="w-full h-full object-cover" />
-                                    {/* Fallback color if unsplash fails/lazy */}
-                                    <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 opacity-50"></div>
+                        { name: 'New In', gradient: 'from-[#ff0055] via-[#ff5b00] to-[#ff0055]', img: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=200&auto=format&fit=crop' },
+                        { name: 'Best Sellers', gradient: 'from-[#833ab4] via-[#fd1d1d] to-[#fcb045]', img: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?q=80&w=200&auto=format&fit=crop' },
+                        { name: 'Oversized', gradient: 'from-[#00c6ff] to-[#0072ff]', img: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=200&auto=format&fit=crop' },
+                        { name: 'Sneakers', gradient: 'from-[#11998e] to-[#38ef7d]', img: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=200&auto=format&fit=crop' },
+                        { name: 'Accessories', gradient: 'from-[#ee0979] to-[#ff6a00]', img: 'https://images.unsplash.com/photo-1611095973763-414019e72400?q=80&w=200&auto=format&fit=crop' },
+                        { name: 'Sale', gradient: 'from-[#f12711] to-[#f5af19]', img: 'https://images.unsplash.com/photo-1607083206968-13611e3d76db?q=80&w=200&auto=format&fit=crop' }
+                    ].map((cat, i) => (
+                        <div key={i} className="flex flex-col items-center group cursor-pointer">
+                            <div className="relative p-[3px] rounded-full transition-transform duration-300 group-hover:scale-105 active:scale-95">
+                                {/* Gradient Ring */}
+                                <div className={`absolute inset-0 rounded-full bg-gradient-to-tr ${cat.gradient} animate-spin-slow opacity-80 group-hover:opacity-100 transition-opacity`}></div>
+
+                                {/* Inner White Gap */}
+                                <div className="relative bg-white p-[2px] rounded-full">
+                                    {/* Image Container */}
+                                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border border-gray-100 shadow-inner bg-gray-50">
+                                        <img
+                                            src={cat.img}
+                                            alt={cat.name}
+                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                        />
+                                    </div>
                                 </div>
                             </div>
-                            <span className="text-xs font-bold uppercase tracking-wide">{story.name}</span>
+                            <span className="mt-3 text-[10px] md:text-xs font-black uppercase tracking-[0.15em] text-gray-800 group-hover:text-black transition-colors">
+                                {cat.name}
+                            </span>
                         </div>
                     ))}
                 </div>
             </section>
-
-            {/* Bento Grid Hero Section */}
+                      
+             {/* Trust Bar (Benefits Section) */}
+             
+            <section className="bg-gray-50 border-b border-gray-100 py-6">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+                    <div className="flex flex-wrap justify-between gap-6 md:gap-4">
+                        {[
+                            { icon: Truck, title: 'Free Shipping', desc: 'On orders over ₹1999' },
+                            { icon: RotateCcw, title: '14 Days Return', desc: 'Easy returns policy' },
+                            { icon: ShieldCheck, title: 'Secure Payment', desc: '100% secure checkout' },
+                            { icon: Headphones, title: '24/7 Support', desc: 'Dedicated help center' }
+                        ].map((benefit, i) => (
+                            <div key={i} className="flex items-center space-x-3 group min-w-[140px]">
+                                <div className="p-2.5 bg-white rounded-xl shadow-sm border border-gray-100 group-hover:bg-black group-hover:text-white transition-all duration-300">
+                                    <benefit.icon className="w-4 h-4 md:w-5 md:h-5" />
+                                </div>
+                                <div className="leading-tight">
+                                    <h4 className="text-[10px] md:text-xs font-black uppercase tracking-tight text-gray-900">{benefit.title}</h4>
+                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">{benefit.desc}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
             <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 pt-8 pb-2">
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:grid-rows-2 h-auto md:h-[600px]">
 
@@ -301,6 +335,33 @@ export default function HomePage() {
                                 </div>
                             </div>
                         ))}
+                    </div>
+
+                    {/* Drip Club Newsletter Section */}
+                    <div className="mt-24 relative rounded-[3.5rem] bg-black p-10 md:p-20 overflow-hidden shadow-2xl border border-white/5">
+                        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-600/10 blur-[120px] rounded-full -mr-40 -mt-40 animate-pulse"></div>
+                        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-purple-600/10 blur-[100px] rounded-full -ml-40 -mb-40"></div>
+                        <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-16">
+                            <div className="max-w-xl text-center lg:text-left">
+                                <span className="inline-flex items-center px-5 py-2 rounded-full bg-white/5 text-white text-[10px] font-black uppercase tracking-[0.3em] mb-8 border border-white/10 shadow-lg">
+                                    <Sparkles className="w-3 h-3 mr-3 text-yellow-500" /> Member Only Access
+                                </span>
+                                <h2 className="text-5xl md:text-8xl font-black text-white uppercase tracking-tighter italic mb-8 leading-[0.85]">JOIN THE <br /><span className="text-transparent stroke-text" style={{ WebkitTextStroke: '1px white' }}>DRIP</span> CLUB</h2>
+                                <p className="text-gray-400 text-sm md:text-lg font-medium max-w-sm mx-auto lg:mx-0 tracking-wide mb-10 leading-relaxed">Early access. Private sales. The Aesthetic Journal.</p>
+                                <p className="text-red-500 font-black tracking-[0.4em] text-[10px] uppercase">No noise. Just drip.</p>
+                            </div>
+                            <div className="w-full max-w-md">
+                                <form className="flex flex-col gap-5" onSubmit={(e) => e.preventDefault()}>
+                                    <div className="relative group">
+                                        <Mail className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-white transition-colors" />
+                                        <input type="email" placeholder="email@example.com" className="w-full bg-white/5 border border-white/10 rounded-3xl py-6 pl-16 pr-8 text-white placeholder-gray-600 focus:outline-none focus:border-white/20 focus:bg-white/[0.07] transition-all text-sm font-bold tracking-widest shadow-inner uppercase" />
+                                    </div>
+                                    <button className="w-full bg-white text-black font-black uppercase tracking-[0.3em] py-6 rounded-3xl hover:bg-red-500 hover:text-white transition-all transform active:scale-95 flex items-center justify-center gap-4 text-xs shadow-2xl">
+                                        GET ACCESS <ArrowRight className="w-5 h-5" />
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
