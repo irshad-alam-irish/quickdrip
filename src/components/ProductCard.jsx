@@ -1,9 +1,32 @@
-import React from 'react';
-import { ShoppingBag, Heart, Star, Eye } from 'lucide-react';
+import React, { useState } from 'react';
+import { ShoppingBag, Heart, Star, Eye, Zap, Loader2, Check } from 'lucide-react';
+import { useCart } from '../context/CartContext';
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, onQuickView }) => {
+    const { addToCart } = useCart();
+    const [isAdding, setIsAdding] = useState(false);
+    const [isAdded, setIsAdded] = useState(false);
+
+    const handleAdd = (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        if (isAdded || isAdding) return;
+
+        setIsAdding(true);
+        // Simulate API delay for UX
+        setTimeout(() => {
+            addToCart(product, 'M'); // Default size for quick add
+            setIsAdding(false);
+            setIsAdded(true);
+            setTimeout(() => setIsAdded(false), 2000);
+        }, 600);
+    };
+
     return (
-        <div className="group relative w-full cursor-pointer">
+        <div
+            className="group relative w-full cursor-pointer"
+            onClick={() => onQuickView && onQuickView(product)}
+        >
             {/* Image Container with Hover Zoom & Overlay */}
             <div className="aspect-[3/4] w-full overflow-hidden rounded-xl bg-gray-100 relative shadow-sm group-hover:shadow-xl transition-all duration-500">
                 <img
@@ -37,9 +60,24 @@ const ProductCard = ({ product }) => {
                     </button>
                 </div>
 
-                {/* Quick Add Button (Bottom) */}
-                <button className="absolute bottom-4 left-4 right-4 bg-white text-black font-bold py-3 rounded-lg shadow-lg translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center hover:bg-red-500 hover:text-white">
-                    <ShoppingBag className="w-4 h-4 mr-2" /> ADD TO BAG
+                {/* Interactive Add Button */}
+                <button
+                    className={`absolute bottom-4 left-4 right-4 font-bold py-3 rounded-lg shadow-lg transition-all duration-300 flex items-center justify-center 
+                    opacity-100 translate-y-0 md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0
+                    ${isAdded ? 'bg-green-600 text-white' : 'bg-white text-black hover:bg-red-500 hover:text-white'}`}
+                    onClick={handleAdd}
+                >
+                    {isAdding ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : isAdded ? (
+                        <>
+                            <Check className="w-4 h-4 mr-2" /> ADDED
+                        </>
+                    ) : (
+                        <>
+                            <ShoppingBag className="w-4 h-4 mr-2" /> ADD TO BAG
+                        </>
+                    )}
                 </button>
             </div>
 
@@ -54,7 +92,13 @@ const ProductCard = ({ product }) => {
                     </div>
                 </div>
 
-                <p className="text-xs text-gray-500 mb-2">{product.category}</p>
+                <div className="flex items-center gap-2 mb-2">
+                    <p className="text-xs text-gray-500">{product.category}</p>
+                    <div className="flex items-center gap-1 bg-green-50 px-2 py-0.5 rounded text-[10px] font-bold text-green-700 border border-green-100">
+                        <Zap className="w-3 h-3 fill-green-700" />
+                        14 Mins
+                    </div>
+                </div>
 
                 <div className="flex justify-between items-center">
                     <div className="flex items-baseline space-x-2">

@@ -1,16 +1,21 @@
 import SEO from '../components/SEO';
-import { ArrowRight, Sparkles, Flame, Clock, ArrowUpRight, Play, Instagram, Truck, RotateCcw, ShieldCheck, Headphones, Mail, User, MessageSquare, Send } from 'lucide-react';
+import { ArrowRight, Sparkles, Flame, Clock, ArrowUpRight, Play, Instagram, Truck, RotateCcw, ShieldCheck, Headphones, Mail, User, MessageSquare, Send, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import heroFashion from '../assets/hero-fashion.png';
 import sneakerDrop from '../assets/sneaker-drop.png';
 import abstractBg from '../assets/abstract-bg.png';
-import React from 'react';
+import React, { useState } from 'react';
 
 import ProductCard from '../components/ProductCard';
+import OfferCarousel from '../components/OfferCarousel';
+import QuickGrid from '../components/QuickGrid';
+import ProductModal from '../components/ProductModal';
 import { menProducts } from '../data/products-men';
 import { womenProducts } from '../data/products-women';
 
 export default function HomePage() {
+    const [selectedProduct, setSelectedProduct] = useState(null);
+
     // Featured products - mix from different categories
     const featuredProducts = [
         ...menProducts.slice(0, 3),
@@ -33,141 +38,11 @@ export default function HomePage() {
                 keywords="streetwear, gen z fashion, aesthetic, drops, sneakers"
             />
 
-            {/* Marquee Banner */}
-            <div className="bg-primary text-white overflow-hidden py-3 relative z-10 border-b border-gray-800">
-                <div className="animate-marquee whitespace-nowrap flex space-x-8">
-                    <span className="text-sm font-bold tracking-widest uppercase flex items-center mx-4"><Flame className="w-4 h-4 mr-2 text-red-500" /> NEW SEASON DROP IS LIVE</span>
-                    <span className="text-sm font-bold tracking-widest uppercase flex items-center mx-4">FREE SHIPPING ON ORDERS OVER ₹2000</span>
-                    <span className="text-sm font-bold tracking-widest uppercase flex items-center mx-4"><Sparkles className="w-4 h-4 mr-2 text-yellow-400" /> 10% OFF FOR STUDENTS</span>
-                    <span className="text-sm font-bold tracking-widest uppercase flex items-center mx-4"><Flame className="w-4 h-4 mr-2 text-red-500" /> NEW SEASON DROP IS LIVE</span>
-                    <span className="text-sm font-bold tracking-widest uppercase flex items-center mx-4">FREE SHIPPING ON ORDERS OVER ₹2000</span>
-                    <span className="text-sm font-bold tracking-widest uppercase flex items-center mx-4"><Sparkles className="w-4 h-4 mr-2 text-yellow-400" /> 10% OFF FOR STUDENTS</span>
-                    <span className="text-sm font-bold tracking-widest uppercase flex items-center mx-4"><Flame className="w-4 h-4 mr-2 text-red-500" /> NEW SEASON DROP IS LIVE</span>
-                    <span className="text-sm font-bold tracking-widest uppercase flex items-center mx-4">FREE SHIPPING ON ORDERS OVER ₹2000</span>
-                    <span className="text-sm font-bold tracking-widest uppercase flex items-center mx-4"><Sparkles className="w-4 h-4 mr-2 text-yellow-400" /> 10% OFF FOR STUDENTS</span>
-                </div>
+            {/* Top Offers & Categories */}
+            <div className="bg-gray-50/50 pb-6 border-b border-gray-100">
+                <OfferCarousel />
+                <QuickGrid />
             </div>
-
-            {/* Story Categories (Myntra/Insta Style) */}
-            <section className="bg-white py-8 border-b border-gray-100 overflow-x-auto no-scrollbar">
-                <div className="max-w-7xl mx-auto px-4 flex space-x-8 md:justify-center min-w-max">
-                    {[
-                        { name: 'New In', gradient: 'from-[#ff0055] via-[#ff5b00] to-[#ff0055]', img: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=200&auto=format&fit=crop' },
-                        { name: 'Best Sellers', gradient: 'from-[#833ab4] via-[#fd1d1d] to-[#fcb045]', img: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?q=80&w=200&auto=format&fit=crop' },
-                        { name: 'Oversized', gradient: 'from-[#00c6ff] to-[#0072ff]', img: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=200&auto=format&fit=crop' },
-                        { name: 'Sneakers', gradient: 'from-[#11998e] to-[#38ef7d]', img: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=200&auto=format&fit=crop' },
-                        { name: 'Accessories', gradient: 'from-[#ee0979] to-[#ff6a00]', img: 'https://images.unsplash.com/photo-1611095973763-414019e72400?q=80&w=200&auto=format&fit=crop' },
-                        { name: 'Sale', gradient: 'from-[#f12711] to-[#f5af19]', img: 'https://images.unsplash.com/photo-1607083206968-13611e3d76db?q=80&w=200&auto=format&fit=crop' }
-                    ].map((cat, i) => (
-                        <div key={i} className="flex flex-col items-center group cursor-pointer">
-                            <div className="relative p-[3px] rounded-full transition-transform duration-300 group-hover:scale-105 active:scale-95">
-                                {/* Gradient Ring */}
-                                <div className={`absolute inset-0 rounded-full bg-gradient-to-tr ${cat.gradient} animate-spin-slow opacity-80 group-hover:opacity-100 transition-opacity`}></div>
-
-                                {/* Inner White Gap */}
-                                <div className="relative bg-white p-[2px] rounded-full">
-                                    {/* Image Container */}
-                                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border border-gray-100 shadow-inner bg-gray-50">
-                                        <img
-                                            src={cat.img}
-                                            alt={cat.name}
-                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                            <span className="mt-3 text-[10px] md:text-xs font-black uppercase tracking-[0.15em] text-gray-800 group-hover:text-black transition-colors">
-                                {cat.name}
-                            </span>
-                        </div>
-                    ))}
-                </div>
-            </section>
-
-            {/* Trust Bar (Benefits Section) */}
-
-            <section className="bg-gray-50 border-b border-gray-100 py-6">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
-                    <div className="flex flex-wrap justify-between gap-6 md:gap-4">
-                        {[
-                            { icon: Truck, title: 'Free Shipping', desc: 'On orders over ₹1999' },
-                            { icon: RotateCcw, title: '14 Days Return', desc: 'Easy returns policy' },
-                            { icon: ShieldCheck, title: 'Secure Payment', desc: '100% secure checkout' },
-                            { icon: Headphones, title: '24/7 Support', desc: 'Dedicated help center' }
-                        ].map((benefit, i) => (
-                            <div key={i} className="flex items-center space-x-3 group min-w-[140px]">
-                                <div className="p-2.5 bg-white rounded-xl shadow-sm border border-gray-100 group-hover:bg-black group-hover:text-white transition-all duration-300">
-                                    <benefit.icon className="w-4 h-4 md:w-5 md:h-5" />
-                                </div>
-                                <div className="leading-tight">
-                                    <h4 className="text-[10px] md:text-xs font-black uppercase tracking-tight text-gray-900">{benefit.title}</h4>
-                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">{benefit.desc}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-            <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 pt-8 pb-2">
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:grid-rows-2 h-auto md:h-[600px]">
-
-                    {/* Main Hero Card (Large - 8 cols) */}
-                    <div className="h-[500px] md:h-auto md:col-span-8 md:row-span-2 relative group rounded-3xl overflow-hidden cursor-pointer">
-                        <img src={heroFashion} alt="Streetwear Model" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-
-                        <div className="absolute bottom-8 left-8 md:bottom-12 md:left-12 text-white p-4">
-                            <span className="bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-4 inline-block">
-                                Season 04
-                            </span>
-                            <h2 className="text-4xl md:text-6xl font-black italic tracking-tighter mb-2 leading-none">
-                                URBAN <br /> OVERLOAD
-                            </h2>
-                            <p className="text-gray-300 text-sm md:text-base max-w-md mb-6 font-medium">
-                                Redefining street aesthetics with bold cuts and neo-textiles. The future of drip is here.
-                            </p>
-                            <button className="bg-white text-black font-bold py-3 px-8 rounded-full flex items-center hover:bg-red-500 hover:text-white transition-all transform hover:-translate-y-1">
-                                SHOP COLLECTION <ArrowRight className="ml-2 w-4 h-4" />
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Secondary Card 1 (Top Right - 4 cols) - Abstract Promo */}
-                    <div className="h-[300px] md:h-auto md:col-span-4 md:row-span-1 relative group rounded-3xl overflow-hidden cursor-pointer bg-black">
-                        <img src="https://images.unsplash.com/photo-1557672172-298e090bd0f1?q=80&w=800&auto=format&fit=crop" alt="Abstract Texture" className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
-                        <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-6">
-                            <h3 className="text-3xl font-black text-white italic tracking-tighter mb-1 relative z-10">
-                                FLAT 40% OFF
-                            </h3>
-                            <p className="text-white/80 font-bold tracking-widest text-xs z-10">USE CODE: DRIP40</p>
-                        </div>
-                    </div>
-
-                    {/* Secondary Card 2 (Bottom Right - 4 cols) - Drop Countdown */}
-                    <div className="h-[300px] md:h-auto md:col-span-4 md:row-span-1 relative group rounded-3xl overflow-hidden bg-gray-100 cursor-pointer border border-gray-200">
-                        <div className="absolute top-4 left-4 z-20">
-                            <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase animate-pulse">
-                                Live Drop
-                            </span>
-                        </div>
-                        <img src={sneakerDrop} alt="Sneaker Drop" className="absolute right-0 bottom-0 w-4/5 h-auto object-contain transform translate-x-4 translate-y-4 group-hover:translate-x-0 group-hover:translate-y-0 transition-transform duration-500" />
-
-                        <div className="absolute top-1/2 left-6 -translate-y-1/2 z-10">
-                            <h3 className="text-xl font-bold text-gray-900 leading-tight mb-2">
-                                Cyber <br /> Runner X
-                            </h3>
-                            <div className="flex items-center text-xs font-bold text-gray-500">
-                                <Clock className="w-3 h-3 mr-1" /> Ends in 04:22:15
-                            </div>
-                            <div className="mt-4">
-                                <span className="text-sm font-bold underline decoration-2 decoration-red-500 flex items-center">
-                                    Cop Now <ArrowUpRight className="w-3 h-3 ml-1" />
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
             {/* Trending Scrolling Text */}
             {/* Our Brands - Premium & Aesthetic */}
@@ -220,13 +95,68 @@ export default function HomePage() {
                 {/* Scroll Container */}
                 <div className="flex overflow-x-auto space-x-6 px-4 sm:px-6 lg:px-10 pb-8 no-scrollbar snap-x snap-mandatory">
                     {featuredDrops.map((product) => (
-                        <ProductCard key={product.id} product={product} />
+                        <div key={product.id} className="min-w-[200px] md:min-w-[260px] snap-start">
+                            <ProductCard product={product} onQuickView={setSelectedProduct} />
+                        </div>
                     ))}
                 </div>
-                <div className="md:hidden px-4 text-center mt-2">
-                    <Link to="/products/all" className="inline-flex items-center font-bold text-sm hover:text-red-500 transition-colors">
-                        VIEW ALL DROPS <ArrowRight className="ml-2 w-4 h-4" />
-                    </Link>
+            </section>
+
+            {/* Superfast Delivery Section - Blinkit Style */}
+            <section className="py-4 bg-green-50 border-t border-b border-green-100">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 mb-6 flex items-center gap-3">
+                    <div className="p-2 bg-green-100 rounded-full">
+                        <Zap className="w-6 h-6 text-green-600 fill-green-600" />
+                    </div>
+                    <div>
+                        <span className="text-green-600 font-bold tracking-widest uppercase text-xs block">Under 20 Mins</span>
+                        <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter text-gray-900">
+                            Superfast <span className="text-green-600">Delivery</span>
+                        </h2>
+                    </div>
+                </div>
+
+                {/* Scroll Container */}
+                <div className="flex overflow-x-auto space-x-6 px-4 sm:px-6 lg:px-10 pb-8 no-scrollbar snap-x snap-mandatory">
+                    {/* Reuse products but with "fast" feel */}
+                    {[...womenProducts, ...menProducts].slice(0, 6).map((product, idx) => (
+                        <div key={idx} className="min-w-[200px] md:min-w-[260px] snap-start">
+                            <ProductCard product={{ ...product, isNew: idx === 0 }} onQuickView={setSelectedProduct} />
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            {/* Party Ready Curation */}
+            <section className="py-8 bg-black">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 mb-6">
+                    <span className="text-purple-400 font-bold tracking-widest uppercase text-xs block mb-1">Tonight's Vibe</span>
+                    <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-white">
+                        Party Ready <span className="text-transparent stroke-text" style={{ WebkitTextStroke: '1px white' }}>in 15 Mins</span>
+                    </h2>
+                </div>
+                <div className="flex overflow-x-auto space-x-6 px-4 sm:px-6 lg:px-10 pb-8 no-scrollbar snap-x snap-mandatory">
+                    {[...menProducts, ...womenProducts].slice(3, 9).map((product, idx) => (
+                        <div key={idx} className="min-w-[200px] md:min-w-[260px] snap-start">
+                            {/* Dark Mode Card Variant */}
+                            <div className="group relative w-full cursor-pointer">
+                                <div className="aspect-[3/4] w-full overflow-hidden rounded-xl bg-gray-900 relative shadow-sm group-hover:shadow-purple-900/50 transition-all duration-500">
+                                    <img src={product.image} alt={product.name} className="h-full w-full object-cover object-center group-hover:scale-110 transition-transform duration-700 opacity-90 group-hover:opacity-100" />
+                                    <div className="absolute top-3 right-3 bg-purple-600 text-white text-[10px] font-bold px-2 py-1 rounded-sm shadow-md flex items-center gap-1">
+                                        <Zap className="w-3 h-3 fill-white" /> 15m
+                                    </div>
+                                    <button className="absolute bottom-4 left-4 right-4 bg-white text-black font-bold py-3 rounded-lg shadow-lg translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center hover:bg-purple-500 hover:text-white">
+                                        ADD TO BAG
+                                    </button>
+                                </div>
+                                <div className="mt-3 px-1">
+                                    <h3 className="text-sm font-bold text-white line-clamp-1 uppercase tracking-tight">{product.name}</h3>
+                                    <p className="text-xs text-gray-400">{product.category}</p>
+                                    <span className="text-base font-black text-white">{product.price}</span>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </section>
 
@@ -390,6 +320,12 @@ export default function HomePage() {
                 </div>
             </section>
 
+            {/* Quick View Modal */}
+            <ProductModal
+                product={selectedProduct}
+                isOpen={!!selectedProduct}
+                onClose={() => setSelectedProduct(null)}
+            />
         </>
     );
 }

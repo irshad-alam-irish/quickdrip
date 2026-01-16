@@ -1,5 +1,8 @@
 import Navbar from './Navbar';
 import Footer from './Footer';
+import MobileFooter from './MobileFooter';
+import StickyCart from './StickyCart';
+import DeliveryTracking from './DeliveryTracking';
 
 export default function Layout({ children }) {
     return (
@@ -9,6 +12,9 @@ export default function Layout({ children }) {
                 {children}
             </main>
             <Footer />
+            <StickyCart />
+            <DeliveryTracking />
+            <MobileFooter />
         </div>
     );
 }
