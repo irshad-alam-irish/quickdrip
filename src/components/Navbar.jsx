@@ -38,9 +38,13 @@ export default function Navbar() {
                             <img src={logo} alt="Quickdrip Logo" className="h-8 md:h-20 w-auto object-contain bg-white px-2" />
                         </Link>
 
-                        {/* Mobile: Location Selector instead of Logo */}
-                        <div className="lg:hidden">
-                            <LocationSelector />
+                        {/* <Link to="/" className="lg:hidden relative z-20 -ml-2 mr-2">
+                            <img src={logo} alt="Quickdrip" className="h-8 w-auto object-contain" />
+                        </Link> */}
+
+                        {/* Mobile: Location Selector */}
+                        <div className="lg:hidden flex-1 min-w-0">
+                            <LocationSelector className="scale-90 origin-left" />
                         </div>
 
                         {/* Desktop Navigation (Mega Menu) */}
@@ -99,14 +103,14 @@ export default function Navbar() {
                             <span className="text-sm font-medium text-gray-500 group-hover:text-gray-700">Search "Oversized T-shirt"</span>
                         </div>
                     </div>
-                    <button className="md:hidden p-2 text-gray-700" onClick={() => setIsSearchOpen(true)}>
-                        <Search className="w-6 h-6" />
-                    </button>
-
                     {/* Right Actions */}
                     <div className="flex items-center space-x-4 md:space-x-6">
+                        <div className="md:hidden">
+                            <NavItem icon={Search} label="Search" onClick={() => setIsSearchOpen(true)} />
+                        </div>
+
                         <div
-                            className="relative h-full flex items-center"
+                            className="relative h-full hidden md:flex items-center"
                             onMouseEnter={() => setIsProfileOpen(true)}
                             onMouseLeave={() => setIsProfileOpen(false)}
                         >
@@ -126,7 +130,7 @@ export default function Navbar() {
                                                 navigate('/login');
                                                 setIsProfileOpen(false);
                                             }}
-                                            className="w-full bg-red-500 text-white font-bold py-2.5 rounded-lg hover:bg-red-600 transition-colors shadow-md flex items-center justify-center gap-2"
+                                            className="w-full bg-red-500 text-white font-bold py-2.5 rounded-xl hover:bg-red-600 transition-colors shadow-md flex items-center justify-center gap-2"
                                         >
                                             LOGIN / SIGNUP
                                         </button>

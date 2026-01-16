@@ -6,10 +6,12 @@ export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
     const [cartItems, setCartItems] = useState([]);
+    const [orders, setOrders] = useState([]);
 
     // Load cart from local storage on mount
     useEffect(() => {
         const savedCart = localStorage.getItem('quickdrip_cart');
+        const savedOrders = localStorage.getItem('quickdrip_orders');
         if (savedCart) {
             try {
                 setCartItems(JSON.parse(savedCart));
@@ -17,12 +19,27 @@ export const CartProvider = ({ children }) => {
                 console.error("Failed to parse cart", e);
             }
         }
+        if (savedOrders) {
+            try {
+                setOrders(JSON.parse(savedOrders));
+            } catch (e) {
+                console.error("Failed to parse orders", e);
+            }
+        }
     }, []);
 
-    // Save cart to local storage whenever it changes
+    // Save state to local storage
     useEffect(() => {
         localStorage.setItem('quickdrip_cart', JSON.stringify(cartItems));
     }, [cartItems]);
+
+    useEffect(() => {
+        localStorage.setItem('quickdrip_orders', JSON.stringify(orders));
+    }, [orders]);
+
+    const addOrder = (order) => {
+        setOrders(prev => [order, ...prev]);
+    };
 
     const addToCart = (product, size) => {
         setCartItems(prev => {
@@ -76,7 +93,9 @@ export const CartProvider = ({ children }) => {
             updateQuantity,
             clearCart,
             cartCount,
-            totalAmount
+            totalAmount,
+            orders,
+            addOrder
         }}>
             {children}
         </CartContext.Provider>

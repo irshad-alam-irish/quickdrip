@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ShoppingBag, Heart, Star, Eye, Zap, Loader2, Check } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
-const ProductCard = ({ product, onQuickView }) => {
+const ProductCard = ({ product, onQuickView, darkMode = false }) => {
     const { addToCart } = useCart();
     const [isAdding, setIsAdding] = useState(false);
     const [isAdded, setIsAdded] = useState(false);
@@ -28,7 +28,7 @@ const ProductCard = ({ product, onQuickView }) => {
             onClick={() => onQuickView && onQuickView(product)}
         >
             {/* Image Container with Hover Zoom & Overlay */}
-            <div className="aspect-[3/4] w-full overflow-hidden rounded-xl bg-gray-100 relative shadow-sm group-hover:shadow-xl transition-all duration-500">
+            <div className={`aspect-[3/4] w-full overflow-hidden rounded-xl relative shadow-sm group-hover:shadow-xl transition-all duration-500 ${darkMode ? 'bg-gray-900 shadow-purple-900/20' : 'bg-gray-100'}`}>
                 <img
                     src={product.image}
                     alt={product.name}
@@ -84,7 +84,7 @@ const ProductCard = ({ product, onQuickView }) => {
             {/* Product Info */}
             <div className="mt-4 px-1">
                 <div className="flex justify-between items-start mb-1">
-                    <h3 className="text-sm font-bold text-gray-900 line-clamp-1 uppercase tracking-tight group-hover:text-red-600 transition-colors">
+                    <h3 className={`text-sm font-bold line-clamp-1 uppercase tracking-tight group-hover:text-red-600 transition-colors ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                         {product.name}
                     </h3>
                     <div className="flex items-center text-xs font-bold text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">
@@ -102,7 +102,7 @@ const ProductCard = ({ product, onQuickView }) => {
 
                 <div className="flex justify-between items-center">
                     <div className="flex items-baseline space-x-2">
-                        <span className="text-base font-black text-gray-900">{product.price}</span>
+                        <span className={`text-base font-black ${darkMode ? 'text-white' : 'text-gray-900'}`}>{product.price}</span>
                         {product.originalPrice && (
                             <span className="text-xs text-gray-400 line-through decoration-red-500 decoration-2">{product.originalPrice}</span>
                         )}

@@ -1,15 +1,16 @@
-import SEO from '../components/SEO';
-import { ArrowRight, Sparkles, Flame, Clock, ArrowUpRight, Play, Instagram, Truck, RotateCcw, ShieldCheck, Headphones, Mail, User, MessageSquare, Send, Zap } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import heroFashion from '../assets/hero-fashion.png';
-import sneakerDrop from '../assets/sneaker-drop.png';
-import abstractBg from '../assets/abstract-bg.png';
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, Sparkles, Flame, Clock, ArrowUpRight, Play, Instagram, Truck, RotateCcw, ShieldCheck, Headphones, Mail, User, MessageSquare, Send, Zap } from 'lucide-react';
 
+import SEO from '../components/SEO';
 import ProductCard from '../components/ProductCard';
 import OfferCarousel from '../components/OfferCarousel';
 import QuickGrid from '../components/QuickGrid';
 import ProductModal from '../components/ProductModal';
+import Footer from '../components/Footer';
+import ViewMoreCard from '../components/ViewMoreCard';
+import BrandInfoCard from '../components/BrandInfoCard';
+
 import { menProducts } from '../data/products-men';
 import { womenProducts } from '../data/products-women';
 
@@ -44,7 +45,6 @@ export default function HomePage() {
                 <QuickGrid />
             </div>
 
-            {/* Trending Scrolling Text */}
             {/* Our Brands - Premium & Aesthetic */}
             <section className="py-10 border-b border-gray-50 bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
@@ -94,11 +94,17 @@ export default function HomePage() {
 
                 {/* Scroll Container */}
                 <div className="flex overflow-x-auto space-x-6 px-4 sm:px-6 lg:px-10 pb-8 no-scrollbar snap-x snap-mandatory">
+                    <div className="min-w-[160px] md:min-w-[200px] snap-start">
+                        <BrandInfoCard />
+                    </div>
                     {featuredDrops.map((product) => (
                         <div key={product.id} className="min-w-[200px] md:min-w-[260px] snap-start">
                             <ProductCard product={product} onQuickView={setSelectedProduct} />
                         </div>
                     ))}
+                    <div className="min-w-[200px] md:min-w-[260px] snap-start">
+                        <ViewMoreCard to="/products/new-drops" label="View All Drops" />
+                    </div>
                 </div>
             </section>
 
@@ -118,12 +124,18 @@ export default function HomePage() {
 
                 {/* Scroll Container */}
                 <div className="flex overflow-x-auto space-x-6 px-4 sm:px-6 lg:px-10 pb-8 no-scrollbar snap-x snap-mandatory">
+                    <div className="min-w-[160px] md:min-w-[200px] snap-start">
+                        <BrandInfoCard type="fast" />
+                    </div>
                     {/* Reuse products but with "fast" feel */}
                     {[...womenProducts, ...menProducts].slice(0, 6).map((product, idx) => (
                         <div key={idx} className="min-w-[200px] md:min-w-[260px] snap-start">
                             <ProductCard product={{ ...product, isNew: idx === 0 }} onQuickView={setSelectedProduct} />
                         </div>
                     ))}
+                    <div className="min-w-[200px] md:min-w-[260px] snap-start">
+                        <ViewMoreCard to="/products/express" label="More Fast items" />
+                    </div>
                 </div>
             </section>
 
@@ -136,27 +148,25 @@ export default function HomePage() {
                     </h2>
                 </div>
                 <div className="flex overflow-x-auto space-x-6 px-4 sm:px-6 lg:px-10 pb-8 no-scrollbar snap-x snap-mandatory">
+                    <div className="min-w-[160px] md:min-w-[200px] snap-start">
+                        <BrandInfoCard type="party" darkMode={true} />
+                    </div>
                     {[...menProducts, ...womenProducts].slice(3, 9).map((product, idx) => (
                         <div key={idx} className="min-w-[200px] md:min-w-[260px] snap-start">
-                            {/* Dark Mode Card Variant */}
-                            <div className="group relative w-full cursor-pointer">
-                                <div className="aspect-[3/4] w-full overflow-hidden rounded-xl bg-gray-900 relative shadow-sm group-hover:shadow-purple-900/50 transition-all duration-500">
-                                    <img src={product.image} alt={product.name} className="h-full w-full object-cover object-center group-hover:scale-110 transition-transform duration-700 opacity-90 group-hover:opacity-100" />
-                                    <div className="absolute top-3 right-3 bg-purple-600 text-white text-[10px] font-bold px-2 py-1 rounded-sm shadow-md flex items-center gap-1">
-                                        <Zap className="w-3 h-3 fill-white" /> 15m
-                                    </div>
-                                    <button className="absolute bottom-4 left-4 right-4 bg-white text-black font-bold py-3 rounded-lg shadow-lg translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center hover:bg-purple-500 hover:text-white">
-                                        ADD TO BAG
-                                    </button>
-                                </div>
-                                <div className="mt-3 px-1">
-                                    <h3 className="text-sm font-bold text-white line-clamp-1 uppercase tracking-tight">{product.name}</h3>
-                                    <p className="text-xs text-gray-400">{product.category}</p>
-                                    <span className="text-base font-black text-white">{product.price}</span>
-                                </div>
-                            </div>
+                            <ProductCard
+                                product={product}
+                                onQuickView={setSelectedProduct}
+                                darkMode={true}
+                            />
                         </div>
                     ))}
+                    <div className="min-w-[200px] md:min-w-[260px] snap-start">
+                        <ViewMoreCard
+                            to="/products/party"
+                            label="View Party Wear"
+                            darkMode={true}
+                        />
+                    </div>
                 </div>
             </section>
 
@@ -214,21 +224,6 @@ export default function HomePage() {
             {/* Social Proof (Seen on You) */}
             <section className="py-16 bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
-                    {/* Featured Drops */}
-                    <div className="mb-20">
-                        <div className="flex justify-between items-center mb-8">
-                            <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter">Featured Drops</h2>
-                            <button className="text-sm font-bold uppercase tracking-wider hover:underline">View All</button>
-                        </div>
-                        <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory no-scrollbar">
-                            {featuredProducts.map((product, i) => (
-                                <div key={i} className="flex-shrink-0 w-[240px] md:w-[280px] snap-start">
-                                    <ProductCard product={product} />
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
                     <div className="text-center mb-12">
                         <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-4">
                             SEEN ON <span className="text-red-500">YOU</span>
@@ -266,57 +261,6 @@ export default function HomePage() {
                             </div>
                         ))}
                     </div>
-
-                    {/* Direct Drip Contact Section */}
-                    {/* <div className="mt-24 relative rounded-[3.5rem] bg-black p-10 md:p-20 overflow-hidden shadow-2xl border border-white/5">
-                        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-600/10 blur-[120px] rounded-full -mr-40 -mt-40 animate-pulse"></div>
-                        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-purple-600/10 blur-[100px] rounded-full -ml-40 -mb-40"></div>
-
-                        <div className="relative z-10 flex flex-col lg:flex-row items-start justify-between gap-16">
-                            <div className="max-w-xl text-center lg:text-left">
-                                <span className="inline-flex items-center px-5 py-2 rounded-full bg-white/5 text-white text-[10px] font-black uppercase tracking-[0.3em] mb-8 border border-white/10 shadow-lg">
-                                    <Sparkles className="w-3 h-3 mr-3 text-red-500" /> Concierge Service
-                                </span>
-                                <h2 className="text-5xl md:text-8xl font-black text-white uppercase tracking-tighter italic mb-8 leading-[0.85]">DIRECT <br /><span className="text-transparent stroke-text" style={{ WebkitTextStroke: '1px white' }}>DRIP</span></h2>
-                                <p className="text-gray-400 text-sm md:text-lg font-medium max-w-sm mx-auto lg:mx-0 tracking-wide mb-10 leading-relaxed">Questions about a drop? Sizing issues? Just want to vibe? Reach out to our community leads.</p>
-
-                                <div className="hidden lg:flex flex-col gap-4 mt-6">
-                                    <div className="flex items-center space-x-4 text-white/60 hover:text-white transition-colors cursor-pointer group">
-                                        <div className="p-3 bg-white/5 rounded-xl border border-white/10 group-hover:border-red-500/50 group-hover:bg-red-500/10 transition-all">
-                                            <Instagram className="w-5 h-5" />
-                                        </div>
-                                        <span className="text-xs font-black uppercase tracking-widest">@quickdrip_hq</span>
-                                    </div>
-                                    <div className="flex items-center space-x-4 text-white/60 hover:text-white transition-colors cursor-pointer group">
-                                        <div className="p-3 bg-white/5 rounded-xl border border-white/10 group-hover:border-red-500/50 group-hover:bg-red-500/10 transition-all">
-                                            <Mail className="w-5 h-5" />
-                                        </div>
-                                        <span className="text-xs font-black uppercase tracking-widest">hello@quickdrip.io</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="w-full max-w-xl">
-                                <form className="grid grid-cols-1 md:grid-cols-2 gap-6" onSubmit={(e) => e.preventDefault()}>
-                                    <div className="relative group col-span-1">
-                                        <User className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-red-500 transition-colors w-4 h-4" />
-                                        <input type="text" placeholder="YOUR NAME" className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-14 pr-6 text-white placeholder-gray-600 focus:outline-none focus:border-red-500/40 focus:bg-white/[0.08] transition-all text-xs font-black tracking-widest uppercase" />
-                                    </div>
-                                    <div className="relative group col-span-1">
-                                        <Mail className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-red-500 transition-colors w-4 h-4" />
-                                        <input type="email" placeholder="EMAIL ADDRESS" className="w-full bg-white/5 border border-white/10 rounded-2xl py-5 pl-14 pr-6 text-white placeholder-gray-600 focus:outline-none focus:border-red-500/40 focus:bg-white/[0.08] transition-all text-xs font-black tracking-widest uppercase" />
-                                    </div>
-                                    <div className="relative group col-span-full">
-                                        <MessageSquare className="absolute left-6 top-6 text-gray-500 group-focus-within:text-red-500 transition-colors w-4 h-4" />
-                                        <textarea rows="4" placeholder="HOW CAN WE HELP?" className="w-full bg-white/5 border border-white/10 rounded-3xl py-6 pl-14 pr-6 text-white placeholder-gray-600 focus:outline-none focus:border-red-500/40 focus:bg-white/[0.08] transition-all text-xs font-black tracking-widest uppercase resize-none"></textarea>
-                                    </div>
-                                    <button className="col-span-full bg-white text-black font-black uppercase tracking-[0.3em] py-6 rounded-3xl hover:bg-red-500 hover:text-white transition-all transform active:scale-95 flex items-center justify-center gap-4 text-xs shadow-2xl group">
-                                        SEND DRIP <Send className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div> */}
                 </div>
             </section>
 
@@ -326,6 +270,8 @@ export default function HomePage() {
                 isOpen={!!selectedProduct}
                 onClose={() => setSelectedProduct(null)}
             />
+
+            <Footer />
         </>
     );
 }

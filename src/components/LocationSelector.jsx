@@ -13,13 +13,19 @@ export default function LocationSelector({ className = '' }) {
         // Check local storage
         const savedLocation = localStorage.getItem('selectedLocation');
         if (savedLocation) {
-            setLocation(JSON.parse(savedLocation));
-        } else {
-            // Auto open modal on first visit if no location
-            // We can add a flag to prevent reopening if user closed it explicitly
-            const hasSkipped = localStorage.getItem('locationSkipped');
-            if (!hasSkipped) {
-                setIsModalOpen(true);
+            try {
+                const parsed = JSON.parse(savedLocation);
+                // Validate
+                if (parsed && typeof parsed.lat === 'number' && (typeof parsed.lng === 'number' || typeof parsed.lon === 'number')) {
+                    setLocation(parsed);
+                } else {
+                    // Corrupt data, clear it
+                    console.warn("Corrupt location data found, clearing.");
+                    localStorage.removeItem('selectedLocation');
+                    setLocation(null);
+                }
+            } catch (e) {
+                localStorage.removeItem('selectedLocation');
             }
         }
     }, []);

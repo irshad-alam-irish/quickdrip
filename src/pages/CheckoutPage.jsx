@@ -4,18 +4,31 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, MapPin, Tag, CreditCard, Wallet, Truck, CheckCircle2, ArrowRight } from 'lucide-react';
 
 export default function CheckoutPage() {
-    const { cartItems, totalAmount, clearCart } = useCart();
+    const { cartItems, totalAmount, clearCart, addOrder } = useCart();
     const navigate = useNavigate();
     const [selectedPayment, setSelectedPayment] = useState('upi');
     const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+    const [orderSuccess, setOrderSuccess] = useState(false);
 
     const handlePlaceOrder = () => {
         setIsPlacingOrder(true);
         // Simulate Order API
         setTimeout(() => {
-            clearCart();
-            setIsPlacingOrder(false);
-            navigate('/tracking');
+            const newOrder = {
+                id: `QD-${Math.floor(Math.random() * 10000)}`,
+                date: new Date().toISOString(),
+                items: cartItems,
+                total: totalAmount + 5,
+                status: 'Arriving',
+                deliveryTime: '14 Mins'
+            };
+            addOrder(newOrder);
+            setOrderSuccess(true);
+            setTimeout(() => {
+                clearCart();
+                setIsPlacingOrder(false);
+                navigate('/tracking');
+            }, 2000);
         }, 2000);
     };
 
@@ -153,18 +166,23 @@ export default function CheckoutPage() {
             </div>
 
             {/* Bottom Action */}
-            <div className="fixed bottom-0 left-0 right-0 bg-white p-4 border-t border-gray-100 shadow-xl z-40 md:px-10">
+            <div className="fixed bottom-[60px] md:bottom-0 left-0 right-0 bg-white p-4 border-t border-gray-100 shadow-xl z-40 md:px-10">
                 <div className="max-w-2xl mx-auto">
                     <button
                         onClick={handlePlaceOrder}
-                        disabled={isPlacingOrder}
-                        className="w-full bg-[#1a9d1a] hover:bg-[#158015] text-white py-4 rounded-xl font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
+                        disabled={isPlacingOrder || orderSuccess}
+                        className={`w-full py-4 rounded-xl font-bold uppercase tracking-widest text-sm flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed
+                        ${orderSuccess ? 'bg-green-600 text-white' : 'bg-black hover:bg-gray-900 text-white'}`}
                     >
                         {isPlacingOrder ? (
-                            'Processing Payment...'
+                            'Processing...'
+                        ) : orderSuccess ? (
+                            <>
+                                <CheckCircle2 className="w-5 h-5 animate-bounce" /> ORDER PLACED!
+                            </>
                         ) : (
                             <>
-                                Pay ₹{(totalAmount + 5).toLocaleString()} <ArrowRight className="w-4 h-4" />
+                                {selectedPayment === 'cod' ? 'Place Order' : `Pay ₹${(totalAmount + 5).toLocaleString()}`} <ArrowRight className="w-4 h-4" />
                             </>
                         )}
                     </button>

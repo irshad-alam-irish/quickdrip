@@ -13,7 +13,7 @@ export default function StickyCart() {
 
     return (
         <div className="fixed bottom-[70px] left-4 right-4 z-40 md:hidden animate-in slide-in-from-bottom-5 fade-in duration-300">
-            <Link to="/cart" className="bg-[#1a9d1a] text-white p-3 rounded-xl shadow-xl flex justify-between items-center cursor-pointer hover:bg-[#158015] transition-colors">
+            <Link to="/cart" className="bg-black text-white p-3 rounded-xl shadow-xl flex justify-between items-center cursor-pointer hover:bg-gray-900 transition-colors">
                 <div className="flex flex-col leading-tight">
                     <span className="text-[10px] uppercase font-bold text-green-100 tracking-wider">
                         {cartCount} ITEMS
