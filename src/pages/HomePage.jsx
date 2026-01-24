@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles, Flame, Clock, ArrowUpRight, Play, Instagram, Truck, RotateCcw, ShieldCheck, Headphones, Mail, User, MessageSquare, Send, Zap } from 'lucide-react';
 
@@ -10,26 +10,38 @@ import ProductModal from '../components/ProductModal';
 import Footer from '../components/Footer';
 import ViewMoreCard from '../components/ViewMoreCard';
 import BrandInfoCard from '../components/BrandInfoCard';
-
-import { menProducts } from '../data/products-men';
-import { womenProducts } from '../data/products-women';
+import { productAPI } from '../services/api';
 
 export default function HomePage() {
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [featuredDrops, setFeaturedDrops] = useState([]);
+    const [fastDeliveryProducts, setFastDeliveryProducts] = useState([]);
+    const [partyProducts, setPartyProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // Featured products - mix from different categories
-    const featuredProducts = [
-        ...menProducts.slice(0, 3),
-        ...womenProducts.slice(0, 3)
-    ];
-    // Dummy Data for Drops
-    const featuredDrops = [
-        { id: 1, name: 'Cyber Puffer V2', price: '₹8,999', category: 'Outerwear', image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=800&auto=format&fit=crop', isNew: true },
-        { id: 2, name: 'Acid Wash Tee', price: '₹2,499', category: 'T-Shirts', image: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=800&auto=format&fit=crop', discount: '-20%' },
-        { id: 3, name: 'Neo-Cargo Pants', price: '₹5,499', category: 'Bottoms', image: 'https://images.unsplash.com/photo-1517438476312-10d79c077509?q=80&w=800&auto=format&fit=crop' },
-        { id: 4, name: 'Distressed Hoodie', price: '₹4,999', category: 'Hoodies', image: 'https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=800&auto=format&fit=crop', isNew: true },
-        { id: 5, name: 'Reflective Cap', price: '₹1,999', category: 'Accessories', image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?q=80&w=800&auto=format&fit=crop' },
-    ];
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                setLoading(true);
+                // Fetch different sets of products for different sections
+                const [drops, fast, party] = await Promise.all([
+                    productAPI.getProducts({ limit: 10 }), // Featured drops
+                    productAPI.getProducts({ limit: 12, offset: 10 }), // Fast delivery
+                    productAPI.getProducts({ limit: 12, offset: 22 }) // Party ready
+                ]);
+
+                setFeaturedDrops(drops);
+                setFastDeliveryProducts(fast);
+                setPartyProducts(party);
+            } catch (error) {
+                console.error('Failed to fetch products:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProducts();
+    }, []);
 
     return (
         <>
@@ -45,43 +57,50 @@ export default function HomePage() {
                 <QuickGrid />
             </div>
 
-            {/* Our Brands - Premium & Aesthetic */}
-            <section className="py-10 border-b border-gray-50 bg-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
-                    <p className="text-center text-[10px] font-bold tracking-[0.4em] text-gray-400 uppercase mb-8">Official Partners</p>
-                    <div className="flex flex-wrap justify-center md:justify-between items-center gap-8 md:gap-12">
+            {/* Our Collaborated Brands - Luxury Showcase */}
+            <div className="bg-white py-10 border-b border-gray-100">
+                <div className="max-w-7xl mx-auto px-4">
+                    <div className="text-center mb-8 px-4">
+                        <div className="inline-block px-4 py-1.5 rounded-full bg-red-50 border border-red-100 mb-4">
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-red-600">Premium Partnership</span>
+                        </div>
+                        <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-gray-900 mb-4 leading-none">
+                            Our <span className="text-red-500">Collaborated</span> Brands
+                        </h2>
+                        <p className="text-gray-500 font-medium text-xs md:text-sm max-w-2xl mx-auto italic">
+                            Bringing you the world's most iconic luxury houses in one curated collection.
+                        </p>
+                    </div>
+
+                    <div className="flex flex-nowrap items-center gap-8 md:gap-16 overflow-x-auto no-scrollbar py-4 px-4 md:justify-center">
                         {[
-                            { name: 'H&M', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/H%26M-Logo.svg/1200px-H%26M-Logo.svg.png' },
-                            { name: 'Levi\'s', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Levi_Strauss_%26_Co._logo.svg/1200px-Levi_Strauss_%26_Co._logo.svg.png' },
-                            { name: 'Zara', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Zara_Logo.svg/1200px-Zara_Logo.svg.png' },
-                            { name: 'Nike', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Logo_NIKE.svg/1200px-Logo_NIKE.svg.png' },
-                            { name: 'Adidas', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Adidas_Logo.svg/1200px-Adidas_Logo.svg.png' },
-                            { name: 'Puma', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Puma-Logo.svg/1200px-Puma-Logo.svg.png' }
+                            { name: 'Gucci', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Gucci_logo.svg/1024px-Gucci_logo.svg.png' },
+                            { name: 'Louis Vuitton', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Louis_Vuitton_logo_and_wordmark.svg/1024px-Louis_Vuitton_logo_and_wordmark.svg.png' },
+                            { name: 'Prada', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Prada-Logo.svg/1024px-Prada-Logo.svg.png' },
+                            { name: 'Chanel', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Chanel_logo_interlocking_cs.svg/1024px-Chanel_logo_interlocking_cs.svg.png' },
+                            { name: 'Dior', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Dior_Logo.svg/1024px-Dior_Logo.svg.png' },
+                            { name: 'Versace', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Versace_logo.svg/1024px-Versace_logo.svg.png' },
+                            { name: 'Hermes', url: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Logo_Herm%C3%A8s.svg/1024px-Logo_Herm%C3%A8s.svg.png' }
                         ].map((brand, i) => (
-                            <div key={i} className="group cursor-pointer flex items-center justify-center p-2 transition-all duration-300 hover:scale-110">
+                            <div key={i} className="flex-shrink-0 flex items-center justify-center group bg-gray-50/30 p-6 rounded-[2rem] hover:bg-gray-50 hover:shadow-xl hover:shadow-red-500/5 transition-all duration-500 w-36 md:w-48 h-20 md:h-24">
                                 <img
                                     src={brand.url}
                                     alt={brand.name}
-                                    className="h-8 md:h-12 w-auto object-contain"
+                                    className="max-h-10 md:max-h-12 w-auto object-contain hover:scale-110 transition-transform duration-500 cursor-pointer"
                                     onError={(e) => {
-                                        if (e.target) {
-                                            e.target.style.display = 'none';
-                                            const parent = e.target.parentNode;
-                                            if (parent) {
-                                                parent.innerText = brand.name;
-                                                parent.classList.add('text-lg', 'font-black', 'uppercase', 'text-gray-400');
-                                            }
-                                        }
+                                        e.target.onerror = null;
+                                        e.target.src = `https://ui-avatars.com/api/?name=${brand.name}&background=f9fafb&color=ef4444&bold=true&font-size=0.3`;
                                     }}
                                 />
                             </div>
                         ))}
                     </div>
                 </div>
-            </section>
+            </div>
+
 
             {/* Featured Drops Slider */}
-            <section className="py-4 bg-white">
+            <section className="py-4 bg-white mt-8">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 mb-6 flex justify-between items-end">
                     <div>
                         <span className="text-red-500 font-bold tracking-widest uppercase text-xs mb-2 block">Don't Sleep on These</span>
@@ -97,13 +116,22 @@ export default function HomePage() {
                     <div className="min-w-[160px] md:min-w-[200px] snap-start">
                         <BrandInfoCard />
                     </div>
-                    {featuredDrops.map((product) => (
-                        <div key={product.id} className="min-w-[200px] md:min-w-[260px] snap-start">
-                            <ProductCard product={product} onQuickView={setSelectedProduct} />
-                        </div>
-                    ))}
+                    {loading ? (
+                        // Loading skeleton
+                        [...Array(5)].map((_, i) => (
+                            <div key={i} className="min-w-[200px] md:min-w-[260px] snap-start">
+                                <div className="bg-gray-200 animate-pulse rounded-2xl h-[350px]"></div>
+                            </div>
+                        ))
+                    ) : (
+                        featuredDrops.map((product) => (
+                            <div key={product.id} className="min-w-[200px] md:min-w-[260px] snap-start">
+                                <ProductCard product={product} onQuickView={setSelectedProduct} />
+                            </div>
+                        ))
+                    )}
                     <div className="min-w-[200px] md:min-w-[260px] snap-start">
-                        <ViewMoreCard to="/products/new-drops" label="View All Drops" />
+                        <ViewMoreCard to="/products/all" label="View All Drops" />
                     </div>
                 </div>
             </section>
@@ -127,14 +155,21 @@ export default function HomePage() {
                     <div className="min-w-[160px] md:min-w-[200px] snap-start">
                         <BrandInfoCard type="fast" />
                     </div>
-                    {/* Reuse products but with "fast" feel */}
-                    {[...womenProducts, ...menProducts].slice(0, 6).map((product, idx) => (
-                        <div key={idx} className="min-w-[200px] md:min-w-[260px] snap-start">
-                            <ProductCard product={{ ...product, isNew: idx === 0 }} onQuickView={setSelectedProduct} />
-                        </div>
-                    ))}
+                    {loading ? (
+                        [...Array(6)].map((_, i) => (
+                            <div key={i} className="min-w-[200px] md:min-w-[260px] snap-start">
+                                <div className="bg-gray-200 animate-pulse rounded-2xl h-[350px]"></div>
+                            </div>
+                        ))
+                    ) : (
+                        fastDeliveryProducts.slice(0, 6).map((product) => (
+                            <div key={product.id} className="min-w-[200px] md:min-w-[260px] snap-start">
+                                <ProductCard product={product} onQuickView={setSelectedProduct} />
+                            </div>
+                        ))
+                    )}
                     <div className="min-w-[200px] md:min-w-[260px] snap-start">
-                        <ViewMoreCard to="/products/express" label="More Fast items" />
+                        <ViewMoreCard to="/products/all" label="More Fast items" />
                     </div>
                 </div>
             </section>
@@ -151,18 +186,26 @@ export default function HomePage() {
                     <div className="min-w-[160px] md:min-w-[200px] snap-start">
                         <BrandInfoCard type="party" darkMode={true} />
                     </div>
-                    {[...menProducts, ...womenProducts].slice(3, 9).map((product, idx) => (
-                        <div key={idx} className="min-w-[200px] md:min-w-[260px] snap-start">
-                            <ProductCard
-                                product={product}
-                                onQuickView={setSelectedProduct}
-                                darkMode={true}
-                            />
-                        </div>
-                    ))}
+                    {loading ? (
+                        [...Array(6)].map((_, i) => (
+                            <div key={i} className="min-w-[200px] md:min-w-[260px] snap-start">
+                                <div className="bg-gray-700 animate-pulse rounded-2xl h-[350px]"></div>
+                            </div>
+                        ))
+                    ) : (
+                        partyProducts.slice(0, 6).map((product) => (
+                            <div key={product.id} className="min-w-[200px] md:min-w-[260px] snap-start">
+                                <ProductCard
+                                    product={product}
+                                    onQuickView={setSelectedProduct}
+                                    darkMode={true}
+                                />
+                            </div>
+                        ))
+                    )}
                     <div className="min-w-[200px] md:min-w-[260px] snap-start">
                         <ViewMoreCard
-                            to="/products/party"
+                            to="/products/all"
                             label="View Party Wear"
                             darkMode={true}
                         />

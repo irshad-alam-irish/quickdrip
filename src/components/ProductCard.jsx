@@ -1,25 +1,98 @@
-import React, { useState } from 'react';
-import { ShoppingBag, Heart, Star, Eye, Zap, Loader2, Check } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ShoppingBag, Heart, Star, Eye, Zap, Loader2, Check, Plus, Minus } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 
 const ProductCard = ({ product, onQuickView, darkMode = false }) => {
-    const { addToCart } = useCart();
+    const { cartItems, addToCart, updateQuantity } = useCart();
+    const { wishlistItems, addToWishlist, removeFromWishlist } = useWishlist();
     const [isAdding, setIsAdding] = useState(false);
-    const [isAdded, setIsAdded] = useState(false);
 
-    const handleAdd = (e) => {
+    // Check if product is in cart
+    const cartItem = cartItems.find(item => item.product_id === product.id || item.id === product.id);
+    const isInCart = !!cartItem;
+    const cartQuantity = cartItem?.quantity || 0;
+
+    // Check if product is in wishlist
+    const isInWishlist = wishlistItems.some(item => item.product_id === product.id || item.id === product.id);
+
+    // Format price - handle both string and number formats
+    const formatPrice = (price) => {
+        if (!price) return '';
+        if (typeof price === 'string') return price;
+        return `₹${price.toLocaleString('en-IN')}`;
+    };
+
+    const handleAdd = async (e) => {
         e.stopPropagation();
         e.preventDefault();
-        if (isAdded || isAdding) return;
+        if (isAdding) return;
 
         setIsAdding(true);
-        // Simulate API delay for UX
-        setTimeout(() => {
-            addToCart(product, 'M'); // Default size for quick add
+        try {
+            await addToCart(product, 'M'); // Default size for quick add
+        } catch (error) {
+            console.error('Failed to add to cart:', error);
+        } finally {
             setIsAdding(false);
-            setIsAdded(true);
-            setTimeout(() => setIsAdded(false), 2000);
-        }, 600);
+        }
+    };
+
+    const handleIncrement = async (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        if (isAdding || !cartItem) return;
+
+        setIsAdding(true);
+        try {
+            // Use product_id from cart item for backend, or product.id for guest cart
+            const productId = cartItem.product_id || product.id;
+            await updateQuantity(productId, cartItem.selectedSize || 'M', 1);
+        } catch (error) {
+            console.error('Failed to update quantity:', error);
+        } finally {
+            setIsAdding(false);
+        }
+    };
+
+    const handleDecrement = async (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        if (isAdding || !cartItem) return;
+
+        setIsAdding(true);
+        try {
+            // Use product_id from cart item for backend, or product.id for guest cart
+            const productId = cartItem.product_id || product.id;
+            await updateQuantity(productId, cartItem.selectedSize || 'M', -1);
+        } catch (error) {
+            console.error('Failed to update quantity:', error);
+        } finally {
+            setIsAdding(false);
+        }
+    };
+
+    const handleWishlistToggle = async (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+
+        try {
+            if (isInWishlist) {
+                await removeFromWishlist(product.id);
+            } else {
+                await addToWishlist(product);
+            }
+        } catch (error) {
+            console.error('Failed to toggle wishlist:', error);
+        }
+    };
+
+    const handleQuickView = (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        if (onQuickView) {
+            onQuickView(product);
+        }
     };
 
     return (
@@ -30,7 +103,7 @@ const ProductCard = ({ product, onQuickView, darkMode = false }) => {
             {/* Image Container with Hover Zoom & Overlay */}
             <div className={`aspect-[3/4] w-full overflow-hidden rounded-xl relative shadow-sm group-hover:shadow-xl transition-all duration-500 ${darkMode ? 'bg-gray-900 shadow-purple-900/20' : 'bg-gray-100'}`}>
                 <img
-                    src={product.image}
+                    src={product.image_url || product.image}
                     alt={product.name}
                     className="h-full w-full object-cover object-center group-hover:scale-110 transition-transform duration-700"
                 />
@@ -50,35 +123,63 @@ const ProductCard = ({ product, onQuickView, darkMode = false }) => {
                     </span>
                 )}
 
-                {/* Floating Actions (Right Side) */}
-                <div className="absolute top-12 right-3 flex flex-col space-y-2 opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 delay-75">
-                    <button className="bg-white text-gray-800 p-2 rounded-full shadow-lg hover:bg-black hover:text-white transition-colors">
-                        <Heart className="w-4 h-4" />
+                {/* Floating Actions (Right Side) - ALWAYS VISIBLE */}
+                <div className="absolute top-3 right-3 flex flex-col space-y-2">
+                    <button
+                        onClick={handleWishlistToggle}
+                        className={`p-2 rounded-full shadow-lg transition-all ${isInWishlist
+                            ? 'bg-red-500 text-white'
+                            : 'bg-white text-gray-800 hover:bg-red-500 hover:text-white'
+                            }`}
+                    >
+                        <Heart className={`w-4 h-4 ${isInWishlist ? 'fill-white' : ''}`} />
                     </button>
-                    <button className="bg-white text-gray-800 p-2 rounded-full shadow-lg hover:bg-black hover:text-white transition-colors">
+                    <button
+                        onClick={handleQuickView}
+                        className="bg-white text-gray-800 p-2 rounded-full shadow-lg hover:bg-black hover:text-white transition-colors"
+                    >
                         <Eye className="w-4 h-4" />
                     </button>
                 </div>
 
-                {/* Interactive Add Button */}
-                <button
-                    className={`absolute bottom-4 left-4 right-4 font-bold py-3 rounded-lg shadow-lg transition-all duration-300 flex items-center justify-center 
-                    opacity-100 translate-y-0 md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0
-                    ${isAdded ? 'bg-green-600 text-white' : 'bg-white text-black hover:bg-red-500 hover:text-white'}`}
-                    onClick={handleAdd}
-                >
-                    {isAdding ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : isAdded ? (
-                        <>
-                            <Check className="w-4 h-4 mr-2" /> ADDED
-                        </>
-                    ) : (
-                        <>
-                            <ShoppingBag className="w-4 h-4 mr-2" /> ADD TO BAG
-                        </>
-                    )}
-                </button>
+                {/* Cart Button - Shows Add or Quantity Controls */}
+                {!isInCart ? (
+                    <button
+                        className={`absolute bottom-4 left-4 right-4 font-bold py-3 rounded-lg shadow-lg transition-all duration-300 flex items-center justify-center 
+                        ${isAdding ? 'bg-gray-400 text-white' : 'bg-white text-black hover:bg-red-500 hover:text-white'}`}
+                        onClick={handleAdd}
+                        disabled={isAdding}
+                    >
+                        {isAdding ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                            <>
+                                <ShoppingBag className="w-4 h-4 mr-2" /> ADD TO BAG
+                            </>
+                        )}
+                    </button>
+                ) : (
+                    <div className="absolute bottom-4 left-4 right-4 bg-green-600 text-white font-bold py-2 px-3 rounded-lg shadow-lg flex items-center justify-between opacity-100">
+                        <button
+                            onClick={handleDecrement}
+                            disabled={isAdding}
+                            className="w-8 h-8 flex items-center justify-center bg-white/20 rounded hover:bg-white/30 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                            <Minus className="w-4 h-4" />
+                        </button>
+                        <span className="flex items-center gap-2">
+                            <Check className="w-4 h-4" />
+                            <span className="text-sm">{cartQuantity} IN BAG</span>
+                        </span>
+                        <button
+                            onClick={handleIncrement}
+                            disabled={isAdding}
+                            className="w-8 h-8 flex items-center justify-center bg-white/20 rounded hover:bg-white/30 disabled:opacity-50 transition-colors"
+                        >
+                            <Plus className="w-4 h-4" />
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* Product Info */}
@@ -102,9 +203,9 @@ const ProductCard = ({ product, onQuickView, darkMode = false }) => {
 
                 <div className="flex justify-between items-center">
                     <div className="flex items-baseline space-x-2">
-                        <span className={`text-base font-black ${darkMode ? 'text-white' : 'text-gray-900'}`}>{product.price}</span>
-                        {product.originalPrice && (
-                            <span className="text-xs text-gray-400 line-through decoration-red-500 decoration-2">{product.originalPrice}</span>
+                        <span className={`text-base font-black ${darkMode ? 'text-white' : 'text-gray-900'}`}>{formatPrice(product.price)}</span>
+                        {(product.original_price || product.originalPrice) && (
+                            <span className="text-xs text-gray-400 line-through decoration-red-500 decoration-2">{formatPrice(product.original_price || product.originalPrice)}</span>
                         )}
                     </div>
                     {/* Color Dots */}

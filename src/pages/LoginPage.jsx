@@ -1,47 +1,86 @@
-import { Link } from 'react-router-dom';
-import { Facebook, Mail } from 'lucide-react';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Facebook, Mail, Phone, Lock } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { useNotification } from '../context/NotificationContext';
 
 export default function LoginPage() {
+    const { login } = useAuth();
+    const { showNotification } = useNotification();
+    const navigate = useNavigate();
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            await login(username, password);
+            showNotification('Welcome back!', 'success');
+            navigate('/');
+        } catch (err) {
+            if (err.message?.toLowerCase().includes('verify')) {
+                showNotification('Please verify your account first.', 'info');
+                navigate('/verify-otp', { state: { username } });
+            } else {
+                showNotification(err.message || 'Login failed', 'error');
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
             <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-lg">
                 <div className="text-center">
-                    <h2 className="mt-6 text-3xl font-black text-gray-900 uppercase tracking-tighter">
-                        Nice to see you again
+                    <h2 className="mt-6 text-4xl font-black text-gray-900 uppercase tracking-tighter leading-none">
+                        SEEN ON <span className="text-red-500">YOU</span>
                     </h2>
-                    <p className="mt-2 text-sm text-gray-600">
-                        Enter your details to sign in to your account
+                    <p className="mt-4 text-xs font-bold text-gray-400 uppercase tracking-[0.2em] italic">
+                        The movement begins here
                     </p>
                 </div>
-                <form className="mt-8 space-y-6" action="#" method="POST">
-                    <div className="rounded-md shadow-sm -space-y-px">
-                        <div className="mb-4">
-                            <label htmlFor="email-address" className="sr-only">Email address</label>
+
+                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                    <div className="rounded-md shadow-sm space-y-4">
+                        <div className="relative">
+                            <label htmlFor="username" className="sr-only">Email or Mobile Number</label>
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Mail className="h-5 w-5 text-gray-400" />
+                            </div>
                             <input
-                                id="email-address"
-                                name="email"
-                                type="email"
-                                autoComplete="email"
+                                id="username"
+                                name="username"
+                                type="text"
                                 required
-                                className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-black focus:border-black focus:z-10 sm:text-sm"
-                                placeholder="Email address"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                className="appearance-none rounded-lg relative block w-full pl-10 px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-black focus:border-black focus:z-10 sm:text-sm"
+                                placeholder="Email or Mobile Number"
                             />
                         </div>
-                        <div>
+                        <div className="relative">
                             <label htmlFor="password" className="sr-only">Password</label>
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Lock className="h-5 w-5 text-gray-400" />
+                            </div>
                             <input
                                 id="password"
                                 name="password"
                                 type="password"
                                 autoComplete="current-password"
                                 required
-                                className="appearance-none rounded-lg relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-black focus:border-black focus:z-10 sm:text-sm"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="appearance-none rounded-lg relative block w-full pl-10 px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-black focus:border-black focus:z-10 sm:text-sm"
                                 placeholder="Password"
                             />
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between font-medium">
                         <div className="flex items-center">
                             <input
                                 id="remember-me"
@@ -49,14 +88,14 @@ export default function LoginPage() {
                                 type="checkbox"
                                 className="h-4 w-4 text-black focus:ring-black border-gray-300 rounded"
                             />
-                            <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+                            <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900 cursor-pointer">
                                 Remember me
                             </label>
                         </div>
 
                         <div className="text-sm">
-                            <a href="#" className="font-medium text-red-600 hover:text-red-500">
-                                Forgot your password?
+                            <a href="#" className="text-red-600 hover:text-red-500">
+                                Forgot password?
                             </a>
                         </div>
                     </div>
@@ -64,9 +103,10 @@ export default function LoginPage() {
                     <div>
                         <button
                             type="submit"
-                            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-md text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black uppercase tracking-wider transition-colors"
+                            disabled={loading}
+                            className="group relative w-full flex justify-center py-4 px-4 border border-transparent text-sm font-black rounded-xl text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 uppercase tracking-widest transition-all shadow-xl shadow-red-500/20 active:scale-95 disabled:opacity-50"
                         >
-                            Sign in
+                            {loading ? 'Entering movement...' : 'Sign in to movement'}
                         </button>
                     </div>
 
@@ -75,16 +115,16 @@ export default function LoginPage() {
                             <div className="w-full border-t border-gray-300"></div>
                         </div>
                         <div className="relative flex justify-center text-sm">
-                            <span className="px-2 bg-white text-gray-500">Or continue with</span>
+                            <span className="px-2 bg-white text-gray-500 font-medium">Or continue with</span>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
-                        <button type="button" className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        <button type="button" className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors">
                             <span className="sr-only">Sign in with Google</span>
                             <Mail className="w-5 h-5" />
                         </button>
-                        <button type="button" className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                        <button type="button" className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 transition-colors">
                             <span className="sr-only">Sign in with Facebook</span>
                             <Facebook className="w-5 h-5 text-blue-600" />
                         </button>

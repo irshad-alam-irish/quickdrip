@@ -1,0 +1,13 @@
+C:\Users\dell\Desktop\LaLLy\quickdrip_backend\app\api\auth.py
+C:\Users\dell\Desktop\LaLLy\quickdrip_backend\app\api\cart.py
+C:\Users\dell\Desktop\LaLLy\quickdrip_backend\app\api\orders.py
+C:\Users\dell\Desktop\LaLLy\quickdrip_backend\app\api\products.py
+C:\Users\dell\Desktop\LaLLy\quickdrip_backend\app\api\users.py
+C:\Users\dell\Desktop\LaLLy\quickdrip_backend\app\api\__init__.py
+C:\Users\dell\Desktop\LaLLy\quickdrip_backend\app\api\__pycache__
+C:\Users\dell\Desktop\LaLLy\quickdrip_backend\app\api\__pycache__\auth.cpython-312.pyc
+C:\Users\dell\Desktop\LaLLy\quickdrip_backend\app\api\__pycache__\cart.cpython-312.pyc
+C:\Users\dell\Desktop\LaLLy\quickdrip_backend\app\api\__pycache__\orders.cpython-312.pyc
+C:\Users\dell\Desktop\LaLLy\quickdrip_backend\app\api\__pycache__\products.cpython-312.pyc
+C:\Users\dell\Desktop\LaLLy\quickdrip_backend\app\api\__pycache__\users.cpython-312.pyc
+C:\Users\dell\Desktop\LaLLy\quickdrip_backend\app\api\__pycache__\__init__.cpython-312.pyc

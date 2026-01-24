@@ -1,40 +1,98 @@
 import { useParams, useSearchParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import ProductCard from '../components/ProductCard';
-import { menProducts } from '../data/products-men';
-import { womenProducts } from '../data/products-women';
-import { kidsProducts } from '../data/products-kids';
-import { accessoriesProducts } from '../data/products-accessories';
-import { Filter, X } from 'lucide-react';
+import { productAPI } from '../services/api';
+import { Filter, X, Loader2 } from 'lucide-react';
 
 export default function ProductsPage() {
     const { category } = useParams();
     const [searchParams] = useSearchParams();
     const subcategory = searchParams.get('subcategory');
+    const searchBarQuery = searchParams.get('search');
+
+    // State
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
+    const [offset, setOffset] = useState(0);
     const [selectedSize, setSelectedSize] = useState('');
     const [selectedColor, setSelectedColor] = useState('');
     const [priceRange, setPriceRange] = useState('all');
     const [sortBy, setSortBy] = useState('featured');
     const [showFilters, setShowFilters] = useState(false);
 
-    // Get products based on category
-    const getProducts = () => {
-        switch (category) {
-            case 'men': return menProducts;
-            case 'women': return womenProducts;
-            case 'kids': return kidsProducts;
-            case 'accessories': return accessoriesProducts;
-            case 'all': return [...menProducts, ...womenProducts, ...kidsProducts, ...accessoriesProducts];
-            default: return menProducts;
+    const LIMIT = 20; // Products per page
+    const observerTarget = useRef(null);
+
+    // Load products function
+    const loadProducts = useCallback(async (reset = false) => {
+        if (loading) return;
+
+        setLoading(true);
+        try {
+            const currentOffset = reset ? 0 : offset;
+            const params = {
+                limit: LIMIT,
+                offset: currentOffset
+            };
+
+            // Add category filter if not 'all'
+            if (category && category !== 'all') {
+                params.category = category.charAt(0).toUpperCase() + category.slice(1);
+            }
+
+            const newProducts = await productAPI.getProducts(params);
+
+            if (reset) {
+                setProducts(newProducts);
+                setOffset(LIMIT);
+            } else {
+                setProducts(prev => [...prev, ...newProducts]);
+                setOffset(prev => prev + LIMIT);
+            }
+
+            // Check if there are more products
+            setHasMore(newProducts.length === LIMIT);
+        } catch (error) {
+            console.error('Failed to load products:', error);
+        } finally {
+            setLoading(false);
         }
-    };
+    }, [category, offset, loading]);
 
-    const allProducts = getProducts();
+    // Reset and load products when category changes
+    useEffect(() => {
+        setProducts([]);
+        setOffset(0);
+        setHasMore(true);
+        loadProducts(true);
+    }, [category, subcategory]);
 
-    const searchBarQuery = searchParams.get('search');
+    // Infinite scroll observer
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting && hasMore && !loading) {
+                    loadProducts();
+                }
+            },
+            { threshold: 0.1 }
+        );
 
-    // Filter products
-    const filteredProducts = allProducts.filter(product => {
+        const currentTarget = observerTarget.current;
+        if (currentTarget) {
+            observer.observe(currentTarget);
+        }
+
+        return () => {
+            if (currentTarget) {
+                observer.unobserve(currentTarget);
+            }
+        };
+    }, [hasMore, loading, loadProducts]);
+
+    // Filter products (client-side filtering for now)
+    const filteredProducts = products.filter(product => {
         // Filter by subcategory if specified
         if (subcategory && product.category !== subcategory) return false;
 
@@ -46,11 +104,9 @@ export default function ProductsPage() {
             if (!matchesName && !matchesCategory) return false;
         }
 
-        if (selectedSize && !product.sizes.includes(selectedSize)) return false;
-        if (selectedColor && !product.colors.includes(selectedColor)) return false;
-
+        // Price filter
         if (priceRange !== 'all') {
-            const price = parseInt(product.price.replace(/[₹,]/g, ''));
+            const price = product.price;
             if (priceRange === 'under1000' && price >= 1000) return false;
             if (priceRange === '1000-2000' && (price < 1000 || price >= 2000)) return false;
             if (priceRange === '2000-5000' && (price < 2000 || price >= 5000)) return false;
@@ -60,19 +116,12 @@ export default function ProductsPage() {
         return true;
     });
 
-    // Get unique sizes and colors from all products
-    const allSizes = [...new Set(allProducts.flatMap(p => p.sizes))];
-    const allColors = [...new Set(allProducts.flatMap(p => p.colors))];
-
     // Sort products
     const sortedProducts = [...filteredProducts].sort((a, b) => {
-        const priceA = parseInt(a.price.replace(/[₹,]/g, ''));
-        const priceB = parseInt(b.price.replace(/[₹,]/g, ''));
-
         switch (sortBy) {
-            case 'price-low': return priceA - priceB;
-            case 'price-high': return priceB - priceA;
-            case 'newest': return b.isNew ? 1 : -1;
+            case 'price-low': return a.price - b.price;
+            case 'price-high': return b.price - a.price;
+            case 'newest': return (b.created_at || 0) - (a.created_at || 0);
             default: return 0; // featured
         }
     });
@@ -133,7 +182,7 @@ export default function ProductsPage() {
                         <div className="bg-white rounded-xl p-6 sticky top-24">
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="font-bold text-lg uppercase tracking-tight">Filters</h3>
-                                {(selectedSize || selectedColor || priceRange !== 'all') && (
+                                {(priceRange !== 'all' || sortBy !== 'featured') && (
                                     <button onClick={clearFilters} className="text-xs text-red-500 font-bold hover:underline">
                                         CLEAR ALL
                                     </button>
@@ -160,43 +209,6 @@ export default function ProductsPage() {
                                                 className="w-4 h-4 text-black focus:ring-black"
                                             />
                                             <span className="ml-2 text-sm text-gray-600 group-hover:text-black">{range.label}</span>
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Size Filter */}
-                            <div className="mb-6">
-                                <h4 className="font-bold text-sm mb-3 uppercase text-gray-700">Size</h4>
-                                <div className="flex flex-wrap gap-2">
-                                    {allSizes.map(size => (
-                                        <button
-                                            key={size}
-                                            onClick={() => setSelectedSize(selectedSize === size ? '' : size)}
-                                            className={`px-3 py-1.5 text-xs font-bold rounded border transition-colors ${selectedSize === size
-                                                ? 'bg-black text-white border-black'
-                                                : 'bg-white text-gray-700 border-gray-300 hover:border-black'
-                                                }`}
-                                        >
-                                            {size}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Color Filter */}
-                            <div>
-                                <h4 className="font-bold text-sm mb-3 uppercase text-gray-700">Color</h4>
-                                <div className="space-y-2">
-                                    {allColors.map(color => (
-                                        <label key={color} className="flex items-center cursor-pointer group">
-                                            <input
-                                                type="checkbox"
-                                                checked={selectedColor === color}
-                                                onChange={() => setSelectedColor(selectedColor === color ? '' : color)}
-                                                className="w-4 h-4 text-black focus:ring-black rounded"
-                                            />
-                                            <span className="ml-2 text-sm text-gray-600 group-hover:text-black">{color}</span>
                                         </label>
                                     ))}
                                 </div>
@@ -264,53 +276,6 @@ export default function ProductsPage() {
                                         </div>
                                     </div>
 
-                                    {/* Size Filter */}
-                                    <div>
-                                        <h4 className="font-bold text-sm mb-3 uppercase text-gray-700">Size</h4>
-                                        <div className="flex flex-wrap gap-2">
-                                            {allSizes.map(size => (
-                                                <button
-                                                    key={size}
-                                                    onClick={() => setSelectedSize(selectedSize === size ? '' : size)}
-                                                    className={`px-3 py-1.5 text-xs font-bold rounded border transition-colors ${selectedSize === size
-                                                        ? 'bg-black text-white border-black'
-                                                        : 'bg-white text-gray-700 border-gray-300 hover:border-black'
-                                                        }`}
-                                                >
-                                                    {size}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {/* Color Filter */}
-                                    <div>
-                                        <h4 className="font-bold text-sm mb-3 uppercase text-gray-700">Color</h4>
-                                        <div className="space-y-2">
-                                            {allColors.map(color => (
-                                                <label key={color} className="flex items-center cursor-pointer group">
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedColor === color}
-                                                        onChange={() => setSelectedColor(selectedColor === color ? '' : color)}
-                                                        className="w-4 h-4 text-black focus:ring-black rounded"
-                                                    />
-                                                    <span className="ml-2 text-sm text-gray-600 group-hover:text-black">{color}</span>
-                                                </label>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {/* Clear Filters Button */}
-                                    {(selectedSize || selectedColor || priceRange !== 'all' || sortBy !== 'featured') && (
-                                        <button
-                                            onClick={clearFilters}
-                                            className="w-full py-3 border-2 border-red-500 text-red-500 font-bold rounded-lg hover:bg-red-50 transition-colors"
-                                        >
-                                            CLEAR ALL FILTERS
-                                        </button>
-                                    )}
-
                                     {/* Apply Button */}
                                     <button
                                         onClick={() => setShowFilters(false)}
@@ -325,7 +290,7 @@ export default function ProductsPage() {
 
                     {/* Products Grid */}
                     <div className="flex-1">
-                        {sortedProducts.length === 0 ? (
+                        {sortedProducts.length === 0 && !loading ? (
                             <div className="text-center py-20">
                                 <p className="text-gray-500 text-lg">No products found matching your filters.</p>
                                 <button onClick={clearFilters} className="mt-4 text-red-500 font-bold hover:underline">
@@ -333,11 +298,26 @@ export default function ProductsPage() {
                                 </button>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                                {sortedProducts.map(product => (
-                                    <ProductCard key={product.id} product={product} />
-                                ))}
-                            </div>
+                            <>
+                                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                                    {sortedProducts.map(product => (
+                                        <ProductCard key={product.id} product={product} />
+                                    ))}
+                                </div>
+
+                                {/* Infinite Scroll Trigger */}
+                                <div ref={observerTarget} className="flex justify-center py-8">
+                                    {loading && (
+                                        <div className="flex items-center gap-2 text-gray-600">
+                                            <Loader2 className="w-6 h-6 animate-spin" />
+                                            <span>Loading more products...</span>
+                                        </div>
+                                    )}
+                                    {!hasMore && products.length > 0 && (
+                                        <p className="text-gray-500 text-sm">You've reached the end!</p>
+                                    )}
+                                </div>
+                            </>
                         )}
                     </div>
                 </div>

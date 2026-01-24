@@ -12,21 +12,26 @@ export default function LocationSelector({ className = '' }) {
     useEffect(() => {
         // Check local storage
         const savedLocation = localStorage.getItem('selectedLocation');
+        const hasSkipped = localStorage.getItem('locationSkipped');
+
         if (savedLocation) {
             try {
                 const parsed = JSON.parse(savedLocation);
-                // Validate
                 if (parsed && typeof parsed.lat === 'number' && (typeof parsed.lng === 'number' || typeof parsed.lon === 'number')) {
                     setLocation(parsed);
                 } else {
-                    // Corrupt data, clear it
-                    console.warn("Corrupt location data found, clearing.");
                     localStorage.removeItem('selectedLocation');
                     setLocation(null);
                 }
             } catch (e) {
                 localStorage.removeItem('selectedLocation');
             }
+        } else if (!hasSkipped) {
+            // Auto open modal if no location and not skipped
+            const timer = setTimeout(() => {
+                setIsModalOpen(true);
+            }, 1000); // Small delay for better UX
+            return () => clearTimeout(timer);
         }
     }, []);
 

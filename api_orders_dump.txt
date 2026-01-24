@@ -1,0 +1,87 @@
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from typing import List
+
+from app.database import get_db
+from app.models.user import User
+from app.models.order import Order, OrderItem
+from app.models.cart import CartItem
+from app.schemas.order import OrderCreate, OrderResponse
+from app.api.auth import get_current_user
+
+router = APIRouter(prefix="/orders", tags=["orders"])
+
+
+@router.post("/", response_model=OrderResponse, status_code=status.HTTP_201_CREATED)
+async def create_order(
+    order_data: OrderCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Create a new order from cart items"""
+    # Fetch cart items
+    query_cart = select(CartItem).where(CartItem.user_id == current_user.id)
+    res_cart = await db.execute(query_cart)
+    cart_items = res_cart.scalars().all()
+    
+    if not cart_items:
+        raise HTTPException(status_code=400, detail="Cart is empty")
+
+    total_price = sum(item.quantity * item.price_at_addition for item in cart_items)
+    
+    # Create order
+    new_order = Order(
+        user_id=current_user.id,
+        address_id=order_data.address_id,
+        total_price=total_price,
+        status="pending"
+    )
+    db.add(new_order)
+    await db.commit()
+    await db.refresh(new_order)
+    
+    # Create order items
+    for item in cart_items:
+        order_item = OrderItem(
+            order_id=new_order.id,
+            product_id=item.product_id,
+            quantity=item.quantity,
+            price_at_order=item.price_at_addition
+        )
+        db.add(order_item)
+        await db.delete(item) # Clear cart
+    
+    await db.commit()
+    await db.refresh(new_order)
+    return new_order
+
+
+@router.get("/", response_model=List[OrderResponse])
+async def get_orders(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get all orders for the current user"""
+    query = select(Order).where(Order.user_id == current_user.id).order_by(Order.created_at.desc())
+    result = await db.execute(query)
+    return result.scalars().all()
+
+
+@router.get("/{order_id}", response_model=OrderResponse)
+async def get_order(
+    order_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Get a specific order by ID"""
+    query = select(Order).where(Order.id == order_id, Order.user_id == current_user.id)
+    result = await db.execute(query)
+    order = result.scalar_one_or_none()
+    
+    if not order:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Order not found"
+        )
+    return order

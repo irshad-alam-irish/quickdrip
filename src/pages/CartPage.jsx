@@ -37,15 +37,15 @@ export default function CartPage() {
                     {cartItems.map((item) => (
                         <div key={`${item.id}-${item.selectedSize}`} className="flex gap-4 p-4 border border-gray-100 rounded-2xl bg-white shadow-sm">
                             <div className="w-24 h-32 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0">
-                                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                <img src={item.product_image_url || item.image} alt={item.product_name || item.name} className="w-full h-full object-cover" />
                             </div>
 
                             <div className="flex-1 flex flex-col justify-between">
                                 <div>
                                     <div className="flex justify-between items-start">
                                         <div>
-                                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">{item.category}</p>
-                                            <h3 className="font-bold text-gray-900 line-clamp-1">{item.name}</h3>
+                                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">{item.product_category || item.category}</p>
+                                            <h3 className="font-bold text-gray-900 line-clamp-1">{item.product_name || item.name}</h3>
                                         </div>
                                         <button
                                             onClick={() => removeFromCart(item.id, item.selectedSize)}
@@ -75,7 +75,7 @@ export default function CartPage() {
                                         </button>
                                     </div>
                                     <div className="text-right">
-                                        <span className="block text-lg font-black">{item.price}</span>
+                                        <span className="block text-lg font-black">₹{(item.price_at_addition || parseInt(item.price?.replace(/[^0-9]/g, '') || '0')).toLocaleString('en-IN')}</span>
                                     </div>
                                 </div>
                             </div>

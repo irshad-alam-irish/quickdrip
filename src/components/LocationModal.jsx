@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, MapPin, X, Navigation, Home, Briefcase, ChevronLeft, ArrowRight } from 'lucide-react';
+import { Search, MapPin, X, Navigation, Home, Briefcase, ChevronLeft } from 'lucide-react';
 
 export default function LocationModal({ isOpen, onClose, onSelectLocation, initialLocation }) {
     const [viewState, setViewState] = useState('sheet');
@@ -93,8 +93,27 @@ export default function LocationModal({ isOpen, onClose, onSelectLocation, initi
         setSavedAddresses(newSaved);
         localStorage.setItem('savedAddresses', JSON.stringify(newSaved));
 
-        onSelectLocation(newAddress);
-        onClose();
+        // Check if onSelectLocation is a function before calling it
+        if (typeof onSelectLocation === 'function') {
+            onSelectLocation(newAddress);
+        }
+
+        // Check if onClose is a function before calling it
+        if (typeof onClose === 'function') {
+            onClose();
+        }
+    };
+
+    const handleSelectSavedAddress = (addr) => {
+        // Check if onSelectLocation is a function before calling it
+        if (typeof onSelectLocation === 'function') {
+            onSelectLocation(addr);
+        }
+
+        // Check if onClose is a function before calling it
+        if (typeof onClose === 'function') {
+            onClose();
+        }
     };
 
     if (!isOpen) return null;
@@ -109,24 +128,29 @@ export default function LocationModal({ isOpen, onClose, onSelectLocation, initi
 
                         <div className="px-5 pb-5 flex-1 overflow-y-auto">
                             <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-xl font-black uppercase text-gray-900">Select Location</h2>
-                                <button onClick={onClose} className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors">
-                                    <X className="w-5 h-5" />
+                                <h2 className="text-xl font-black uppercase tracking-tighter text-gray-900">
+                                    CHOOSE <span className="text-red-500">LOCATION</span>
+                                </h2>
+                                <button
+                                    onClick={onClose}
+                                    className="p-2 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors"
+                                >
+                                    <X className="w-5 h-5 text-gray-500" />
                                 </button>
                             </div>
 
                             <form onSubmit={handleSearch} className="mb-6">
-                                <div className="flex items-center gap-2 bg-gray-100 p-3 rounded-xl">
-                                    <Search className="w-5 h-5 text-gray-500" />
+                                <div className="flex items-center gap-2 bg-gray-50 p-4 border border-gray-100 rounded-2xl group focus-within:border-black transition-all">
+                                    <Search className="w-5 h-5 text-gray-400 group-focus-within:text-red-500 transition-colors" />
                                     <input
                                         autoFocus
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                         placeholder="Search for area, street name..."
-                                        className="flex-1 bg-transparent outline-none text-sm font-medium placeholder-gray-400"
+                                        className="flex-1 bg-transparent outline-none text-sm font-bold placeholder-gray-300"
                                     />
-                                    <button type="submit" className="px-4 py-2 bg-black text-white rounded-lg text-xs font-bold">
-                                        Search
+                                    <button type="submit" className="px-5 py-2 bg-red-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-red-500/20 active:scale-95 transition-all">
+                                        FIND
                                     </button>
                                 </div>
                             </form>
@@ -134,16 +158,16 @@ export default function LocationModal({ isOpen, onClose, onSelectLocation, initi
                             <button
                                 onClick={getCurrentLocation}
                                 disabled={loading}
-                                className="w-full flex items-center gap-4 p-4 border border-red-100 bg-red-50/50 rounded-xl mb-8 group active:scale-95 transition-transform disabled:opacity-50"
+                                className="w-full flex items-center gap-4 p-5 border-2 border-red-50 bg-red-50/10 rounded-2xl mb-8 group active:scale-95 transition-all disabled:opacity-50 relative overflow-hidden"
                             >
-                                <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition-colors">
+                                <div className="w-10 h-10 bg-red-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-red-500/20 group-hover:scale-110 transition-transform">
                                     <Navigation className="w-5 h-5" />
                                 </div>
                                 <div className="text-left">
-                                    <span className="block text-red-600 font-bold">
-                                        {loading ? 'Getting location...' : 'Use Current Location'}
+                                    <span className="block text-gray-900 font-black uppercase tracking-widest text-xs">
+                                        {loading ? 'GETTING POSITION...' : 'USE CURRENT GPS'}
                                     </span>
-                                    <span className="block text-xs text-red-400 font-medium">Using GPS</span>
+                                    <span className="block text-[10px] text-red-500 font-bold uppercase tracking-widest mt-0.5">Auto Detect</span>
                                 </div>
                             </button>
 
@@ -154,7 +178,7 @@ export default function LocationModal({ isOpen, onClose, onSelectLocation, initi
                                         {savedAddresses.map(addr => (
                                             <button
                                                 key={addr.id}
-                                                onClick={() => { onSelectLocation(addr); onClose(); }}
+                                                onClick={() => handleSelectSavedAddress(addr)}
                                                 className="w-full flex items-center gap-4 p-3 hover:bg-gray-50 rounded-xl transition-colors group"
                                             >
                                                 <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-lg text-gray-500 group-hover:text-black">
@@ -220,7 +244,7 @@ export default function LocationModal({ isOpen, onClose, onSelectLocation, initi
                             <span className="font-bold text-lg">Enter Address Details</span>
                         </div>
 
-                        <div className="p-6 flex-1 overflow-y-auto">
+                        <div className="p-6 flex-1 overflow-y-auto pb-8 md:pb-6">
                             <div className="space-y-6">
                                 <div>
                                     <label className="block text-xs font-black text-gray-400 uppercase mb-2">Location</label>
@@ -259,8 +283,8 @@ export default function LocationModal({ isOpen, onClose, onSelectLocation, initi
                                                 key={type}
                                                 onClick={() => setManualDetails({ ...manualDetails, saveAs: type })}
                                                 className={`flex-1 py-3 rounded-xl text-sm font-bold border transition-all ${manualDetails.saveAs === type
-                                                        ? 'bg-black text-white border-black shadow-lg transform scale-[1.02]'
-                                                        : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'
+                                                    ? 'bg-black text-white border-black shadow-lg transform scale-[1.02]'
+                                                    : 'bg-white text-gray-500 border-gray-200 hover:border-gray-300'
                                                     }`}
                                             >
                                                 {type}
@@ -268,16 +292,16 @@ export default function LocationModal({ isOpen, onClose, onSelectLocation, initi
                                         ))}
                                     </div>
                                 </div>
-                            </div>
-                        </div>
 
-                        <div className="p-5 border-t border-gray-100">
-                            <button
-                                onClick={handleSaveAddress}
-                                className="w-full bg-red-500 text-white font-black uppercase py-4 rounded-xl shadow-lg hover:bg-red-600 transition-all active:scale-95"
-                            >
-                                Save Address
-                            </button>
+                                <div className="pt-6 pb-12 md:pb-0">
+                                    <button
+                                        onClick={handleSaveAddress}
+                                        className="w-full bg-red-500 text-white font-black uppercase tracking-[0.2em] py-5 rounded-[20px] shadow-xl shadow-red-500/20 hover:bg-red-600 transition-all active:scale-95 text-xs"
+                                    >
+                                        SAVE & CONTINUE
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )}

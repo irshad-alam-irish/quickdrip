@@ -1,21 +1,32 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingBag, Heart, User, Menu, X, ChevronDown, LogIn, Search } from 'lucide-react';
+import { ShoppingBag, Heart, User, Menu, X, ChevronDown, LogIn, Search, LogOut } from 'lucide-react';
 import { navigation } from '../data/navigation';
 import logo from '../assets/logo.png';
 import NavItem from './NavItem';
 import LocationSelector from './LocationSelector';
 import SearchOverlay from './SearchOverlay';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import { useWishlist } from '../context/WishlistContext';
 
 export default function Navbar() {
     const { cartCount } = useCart();
+    const { wishlistCount } = useWishlist();
+    const { user, isAuthenticated, logout } = useAuth();
     const [activeCategory, setActiveCategory] = useState(null);
     const [activeMobileCategory, setActiveMobileCategory] = useState(null);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        setIsProfileOpen(false);
+        setMobileMenuOpen(false);
+        navigate('/');
+    };
 
     const toggleMobileCategory = (categoryId) => {
         setActiveMobileCategory(activeMobileCategory === categoryId ? null : categoryId);
@@ -37,10 +48,6 @@ export default function Navbar() {
                         <Link to="/" className="hidden lg:flex items-center relative z-20">
                             <img src={logo} alt="Quickdrip Logo" className="h-8 md:h-20 w-auto object-contain bg-white px-2" />
                         </Link>
-
-                        {/* <Link to="/" className="lg:hidden relative z-20 -ml-2 mr-2">
-                            <img src={logo} alt="Quickdrip" className="h-8 w-auto object-contain" />
-                        </Link> */}
 
                         {/* Mobile: Location Selector */}
                         <div className="lg:hidden flex-1 min-w-0">
@@ -114,26 +121,47 @@ export default function Navbar() {
                             onMouseEnter={() => setIsProfileOpen(true)}
                             onMouseLeave={() => setIsProfileOpen(false)}
                         >
-                            <NavItem icon={User} label="Profile" />
+                            <NavItem icon={User} label={isAuthenticated ? (user?.full_name?.split(' ')[0] || 'Profile') : 'Profile'} />
 
                             {/* Profile Dropdown */}
                             {isProfileOpen && (
                                 <div className="absolute right-0 top-full mt-0 w-72 bg-white shadow-2xl rounded-xl p-6 z-50 border border-gray-100 transform origin-top-right transition-all animate-in fade-in zoom-in-95 duration-200">
                                     <div className="flex flex-col space-y-4">
                                         <div>
-                                            <h3 className="font-bold text-lg text-gray-900">Welcome</h3>
-                                            <p className="text-xs text-gray-500 mt-1">To access account and manage orders</p>
+                                            <h3 className="font-black text-xl text-gray-900 uppercase tracking-tighter">
+                                                {isAuthenticated ? (
+                                                    <>
+                                                        Hello, <span className="text-red-500">{user?.full_name?.split(' ')[0]}</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        Welcome to <span className="text-red-500">YOU</span>
+                                                    </>
+                                                )}
+                                            </h3>
+                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">
+                                                {isAuthenticated ? user?.email : 'Access luxury drops & orders'}
+                                            </p>
                                         </div>
 
-                                        <button
-                                            onClick={() => {
-                                                navigate('/login');
-                                                setIsProfileOpen(false);
-                                            }}
-                                            className="w-full bg-red-500 text-white font-bold py-2.5 rounded-xl hover:bg-red-600 transition-colors shadow-md flex items-center justify-center gap-2"
-                                        >
-                                            LOGIN / SIGNUP
-                                        </button>
+                                        {isAuthenticated ? (
+                                            <button
+                                                onClick={handleLogout}
+                                                className="w-full bg-black text-white font-bold py-2.5 rounded-xl hover:bg-gray-800 transition-colors shadow-md flex items-center justify-center gap-2"
+                                            >
+                                                <LogOut className="w-4 h-4" /> LOGOUT
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={() => {
+                                                    navigate('/login');
+                                                    setIsProfileOpen(false);
+                                                }}
+                                                className="w-full bg-red-500 text-white font-black py-3 rounded-xl hover:bg-red-600 transition-all shadow-xl shadow-red-500/20 uppercase tracking-widest text-sm active:scale-95"
+                                            >
+                                                LOGIN / SIGNUP
+                                            </button>
+                                        )}
 
                                         <div className="border-t border-gray-100 pt-3 space-y-2">
                                             <Link to="/orders" className="block text-sm text-gray-600 hover:text-black hover:font-medium py-1 transition-all">Orders</Link>
@@ -145,7 +173,7 @@ export default function Navbar() {
                             )}
                         </div>
 
-                        <NavItem icon={Heart} label="Wishlist" onClick={() => navigate('/wishlist')} />
+                        <NavItem icon={Heart} label="Wishlist" badgeCount={wishlistCount} onClick={() => navigate('/wishlist')} />
                         <div className="hidden md:block">
                             <NavItem icon={ShoppingBag} label="Bag" badgeCount={cartCount} onClick={() => navigate('/cart')} />
                         </div>
@@ -180,7 +208,7 @@ export default function Navbar() {
                                         className="w-full flex justify-between items-center p-4 text-left font-bold text-gray-800"
                                     >
                                         {category.name}
-                                        <ChevronDown className={`w - 4 h - 4 transition - transform ${activeMobileCategory === category.id ? 'rotate-180' : ''} `} />
+                                        <ChevronDown className={`w-4 h-4 transition-transform ${activeMobileCategory === category.id ? 'rotate-180' : ''}`} />
                                     </button>
 
                                     {/* Mobile Submenu */}
@@ -210,15 +238,24 @@ export default function Navbar() {
                         </div>
 
                         <div className="p-4 border-t border-gray-100 mt-auto">
-                            <button
-                                onClick={() => {
-                                    navigate('/login');
-                                    setMobileMenuOpen(false);
-                                }}
-                                className="flex items-center space-x-3 w-full p-2 rounded-md hover:bg-gray-100 text-gray-700"
-                            >
-                                <User className="w-5 h-5" /> <span>My Account</span>
-                            </button>
+                            {isAuthenticated ? (
+                                <button
+                                    onClick={handleLogout}
+                                    className="w-full bg-red-500 text-white px-10 py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-red-600 transition-all shadow-xl shadow-red-500/20 active:scale-95"
+                                >
+                                    <LogOut className="w-4 h-4" /> Logout ({user?.full_name?.split(' ')[0]})
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={() => {
+                                        navigate('/login');
+                                        setMobileMenuOpen(false);
+                                    }}
+                                    className="flex items-center space-x-3 w-full p-4 rounded-xl hover:bg-gray-50 text-gray-900 font-black uppercase tracking-widest text-xs border border-gray-100 shadow-sm"
+                                >
+                                    <User className="w-5 h-5 text-red-500" /> <span>Login / Join Now</span>
+                                </button>
+                            )}
                             <button
                                 onClick={() => {
                                     navigate('/wishlist');
@@ -244,5 +281,3 @@ export default function Navbar() {
         </nav>
     );
 }
-
-
