@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ShoppingBag, Heart, Star, Eye, Zap, Loader2, Check, Plus, Minus } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import ProductFeatureBadge from './ProductFeatureBadge';
 
 const ProductCard = ({ product, onQuickView, darkMode = false }) => {
     const { cartItems, addToCart, updateQuantity } = useCart();
@@ -111,12 +112,16 @@ const ProductCard = ({ product, onQuickView, darkMode = false }) => {
                 {/* Gradient Overlay on Hover */}
                 <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
-                {/* Badges */}
-                {product.isNew && (
-                    <span className="absolute top-3 left-3 bg-black text-white text-[10px] font-black px-3 py-1 uppercase tracking-widest clip-path-slant shadow-lg">
-                        NEW DROP
-                    </span>
+                {/* Feature Badges - Top Left */}
+                {product.features && product.features.length > 0 && (
+                    <div className="absolute top-3 left-3 flex flex-wrap gap-1 max-w-[60%]">
+                        {product.features.slice(0, 2).map((feature) => (
+                            <ProductFeatureBadge key={feature.id} feature={feature} size="small" />
+                        ))}
+                    </div>
                 )}
+
+                {/* Discount Badge - Top Right */}
                 {product.discount && (
                     <span className="absolute top-3 right-3 bg-gradient-to-r from-red-600 to-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-sm shadow-md">
                         {product.discount}

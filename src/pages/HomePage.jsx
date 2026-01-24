@@ -25,9 +25,9 @@ export default function HomePage() {
                 setLoading(true);
                 // Fetch different sets of products for different sections
                 const [drops, fast, party] = await Promise.all([
-                    productAPI.getProducts({ limit: 10 }), // Featured drops
-                    productAPI.getProducts({ limit: 12, offset: 10 }), // Fast delivery
-                    productAPI.getProducts({ limit: 12, offset: 22 }) // Party ready
+                    productAPI.getFeaturedProducts(), // Featured drops
+                    productAPI.getProductsByFeature('super-fast'), // Fast delivery
+                    productAPI.getProductsByFeature('party-ready') // Party ready
                 ]);
 
                 setFeaturedDrops(drops);

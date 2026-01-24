@@ -20,10 +20,20 @@ export default function SignupPage() {
         setLoading(true);
         try {
             const data = await register(formData);
-            showNotification('Account created! Please verify your identity.', 'success');
+            const message = data.message || 'Account created! Please verify your identity.';
+            showNotification(message, 'success');
+
+            // Show action required if present
+            if (data.action_required) {
+                setTimeout(() => {
+                    showNotification(data.action_required, 'info');
+                }, 1000);
+            }
+
             navigate('/verify-otp', { state: { username: data.username } });
         } catch (err) {
-            showNotification(err.message || 'Registration failed', 'error');
+            const errorMessage = err.response?.data?.detail || err.message || 'Registration failed';
+            showNotification(errorMessage, 'error');
         } finally {
             setLoading(false);
         }

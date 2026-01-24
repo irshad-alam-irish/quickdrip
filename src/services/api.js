@@ -58,6 +58,21 @@ export const authAPI = {
         const response = await api.post('/auth/resend-otp', { username });
         return response.data;
     },
+
+    checkUserStatus: async (username) => {
+        const response = await api.post('/auth/check-user-status', { username });
+        return response.data;
+    },
+
+    forgotPassword: async (username) => {
+        const response = await api.post('/auth/forgot-password', { username });
+        return response.data;
+    },
+
+    resetPassword: async (username, otp, new_password) => {
+        const response = await api.post('/auth/reset-password', { username, otp, new_password });
+        return response.data;
+    },
 };
 
 // ==================== USER APIs ====================
@@ -149,7 +164,7 @@ export const orderAPI = {
 
 export const productAPI = {
     getProducts: async (params = {}) => {
-        const response = await api.get('/products', { params });
+        const response = await api.get('/products/', { params });
         return response.data;
     },
 
@@ -158,8 +173,18 @@ export const productAPI = {
         return response.data;
     },
 
+    getFeaturedProducts: async () => {
+        const response = await api.get('/products/featured');
+        return response.data;
+    },
+
+    getProductsByFeature: async (featureSlug) => {
+        const response = await api.get('/products/', { params: { feature: featureSlug } });
+        return response.data;
+    },
+
     searchProducts: async (query) => {
-        const response = await api.get('/products/search', { params: { q: query } });
+        const response = await api.get('/products/', { params: { search: query } });
         return response.data;
     },
 };
@@ -191,3 +216,4 @@ export const wishlistAPI = {
 };
 
 export default api;
+

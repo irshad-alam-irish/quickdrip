@@ -58,7 +58,8 @@ export default function OTPVerificationPage() {
             showNotification('Account verified successfully!', 'success');
             navigate('/');
         } catch (err) {
-            showNotification(err.message, 'error');
+            const errorMessage = err.response?.data?.detail || err.message || 'Verification failed';
+            showNotification(errorMessage, 'error');
         } finally {
             setLoading(false);
         }
@@ -67,13 +68,23 @@ export default function OTPVerificationPage() {
     const handleResend = async () => {
         setResending(true);
         try {
-            await resendOtp(username);
-            showNotification('Verification code resent!', 'success');
+            const data = await resendOtp(username);
+            const message = data.message || 'Verification code resent!';
+            showNotification(message, 'success');
+
+            // Show action required if present
+            if (data.action_required) {
+                setTimeout(() => {
+                    showNotification(data.action_required, 'info');
+                }, 1000);
+            }
+
             // Clear current OTP input
             setOtp(['', '', '', '', '', '']);
             inputRefs.current[0].focus();
         } catch (err) {
-            showNotification(err.message, 'error');
+            const errorMessage = err.response?.data?.detail || err.message || 'Failed to resend code';
+            showNotification(errorMessage, 'error');
         } finally {
             setResending(false);
         }
@@ -88,11 +99,11 @@ export default function OTPVerificationPage() {
                             <KeyRound className="w-8 h-8 text-indigo-600" />
                         </div>
                     </div>
-                    
+
                     <h2 className="text-2xl font-bold text-center text-slate-900 mb-2">Verify your account</h2>
                     <p className="text-slate-600 text-center mb-8">
-                        We've sent a 6-digit code to 
-                        your <span className="font-bold text-black text-xs uppercase px-1.5 py-0.5 bg-indigo-100 rounded">Email</span> 
+                        We've sent a 6-digit code to
+                        your <span className="font-bold text-black text-xs uppercase px-1.5 py-0.5 bg-indigo-100 rounded">Email</span>
                         <br /><span className="text-xs text-indigo-600">{username}</span>
                     </p>
 
@@ -124,18 +135,18 @@ export default function OTPVerificationPage() {
                     <div className="mt-8 text-center">
                         <p className="text-slate-600 text-sm">
                             Didn't receive the code?{' '}
-                            <button 
+                            <button
                                 onClick={handleResend}
                                 disabled={resending}
                                 className="text-indigo-600 font-bold hover:underline inline-flex items-center gap-1 disabled:opacity-50"
                             >
-                                <RefreshCcw className={`w-4 h-4 ${resending ? 'animate-spin' : ''}`} /> 
+                                <RefreshCcw className={`w-4 h-4 ${resending ? 'animate-spin' : ''}`} />
                                 {resending ? 'Resending...' : 'Resend'}
                             </button>
                         </p>
                     </div>
 
-                    <button 
+                    <button
                         onClick={() => navigate('/signup')}
                         className="mt-6 flex items-center gap-2 text-slate-500 hover:text-slate-900 text-sm transition-colors mx-auto"
                     >
