@@ -19,6 +19,8 @@ import ProductsPage from './pages/ProductsPage';
 import ProfilePage from './pages/ProfilePage';
 import AccountPage from './pages/AccountPage';
 import OTPVerificationPage from './pages/OTPVerificationPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 // Inner component to access auth context
 const AppContent = () => {
@@ -38,6 +40,8 @@ const AppContent = () => {
                             <Route path="/tracking" element={<OrderTrackingPage />} />
                             <Route path="/login" element={<LoginPage />} />
                             <Route path="/signup" element={<SignupPage />} />
+                            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                            <Route path="/reset-password" element={<ResetPasswordPage />} />
                             <Route path="/orders" element={<OrdersPage />} />
                             <Route path="/verify-otp" element={<OTPVerificationPage />} />
                             <Route path="/products/:category" element={<ProductsPage />} />

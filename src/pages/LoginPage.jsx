@@ -20,11 +20,18 @@ export default function LoginPage() {
             showNotification('Welcome back!', 'success');
             navigate('/');
         } catch (err) {
-            if (err.message?.toLowerCase().includes('verify')) {
-                showNotification('Please verify your account first.', 'info');
-                navigate('/verify-otp', { state: { username } });
+            const errorMessage = err.response?.data?.detail || err.message || 'Login failed';
+
+            // Check if it's an unverified account error
+            if (errorMessage.toLowerCase().includes('not verified') || errorMessage.toLowerCase().includes('verify')) {
+                showNotification(errorMessage, 'warning');
+                // Offer to resend verification
+                setTimeout(() => {
+                    showNotification('Redirecting to verification...', 'info');
+                    navigate('/verify-otp', { state: { username } });
+                }, 1500);
             } else {
-                showNotification(err.message || 'Login failed', 'error');
+                showNotification(errorMessage, 'error');
             }
         } finally {
             setLoading(false);
@@ -94,9 +101,9 @@ export default function LoginPage() {
                         </div>
 
                         <div className="text-sm">
-                            <a href="#" className="text-red-600 hover:text-red-500">
+                            <Link to="/forgot-password" className="text-red-600 hover:text-red-500 font-medium">
                                 Forgot password?
-                            </a>
+                            </Link>
                         </div>
                     </div>
 

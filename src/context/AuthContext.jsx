@@ -152,6 +152,18 @@ export const AuthProvider = ({ children }) => {
         return await authAPI.resendOTP(username);
     };
 
+    const checkUserStatus = async (username) => {
+        return await authAPI.checkUserStatus(username);
+    };
+
+    const forgotPassword = async (username) => {
+        return await authAPI.forgotPassword(username);
+    };
+
+    const resetPassword = async (username, otp, newPassword) => {
+        return await authAPI.resetPassword(username, otp, newPassword);
+    };
+
     const addAddress = async (addressData) => {
         const newAddress = await userAPI.addAddress(addressData);
         setAddresses(prev => [...prev, newAddress]);
@@ -206,6 +218,9 @@ export const AuthProvider = ({ children }) => {
         register,
         verifyOtp,
         resendOtp,
+        checkUserStatus,
+        forgotPassword,
+        resetPassword,
         // Address management
         addresses,
         selectedAddress,
