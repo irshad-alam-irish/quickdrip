@@ -46,7 +46,7 @@ export default function Navbar() {
                             <Menu className="w-6 h-6" />
                         </button>
                         <Link to="/" className="hidden lg:flex items-center relative z-20">
-                            <img src={logo} alt="Quickdrip Logo" className="h-8 md:h-20 w-auto object-contain bg-white px-2" />
+                            <img src={logo} alt="Quickdrip Logo" className="h-12 md:h-28 w-auto object-contain bg-white px-2" />
                         </Link>
 
                         {/* Mobile: Location Selector */}
@@ -107,7 +107,7 @@ export default function Navbar() {
                             onClick={() => setIsSearchOpen(true)}
                         >
                             <Search className="w-5 h-5 text-gray-400 group-hover:text-gray-600 mr-3" />
-                            <span className="text-sm font-medium text-gray-500 group-hover:text-gray-700">Search "Oversized T-shirt"</span>
+                            {/* <span className="text-sm font-medium text-gray-500 group-hover:text-gray-700">Search "Oversized T-shirt"</span> */}
                         </div>
                     </div>
                     {/* Right Actions */}

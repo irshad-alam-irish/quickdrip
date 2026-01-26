@@ -215,5 +215,24 @@ export const wishlistAPI = {
     },
 };
 
+// ==================== COLLECTION APIs ====================
+
+export const collectionAPI = {
+    getFeaturedDrops: async () => {
+        const response = await api.get('/featured-drops');
+        return response.data;
+    },
+
+    getOfficialMerch: async () => {
+        const response = await api.get('/official-merch');
+        return response.data;
+    },
+
+    getSuperfastDelivery: async () => {
+        const response = await api.get('/superfast-delivery');
+        return response.data;
+    },
+};
+
 export default api;
 

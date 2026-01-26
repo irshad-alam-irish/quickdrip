@@ -3,7 +3,7 @@ import { Search, X, Clock, TrendingUp, ChevronRight } from 'lucide-react';
 
 export default function SearchOverlay({ isOpen, onClose }) {
     const [searchTerm, setSearchTerm] = useState('');
-    const [recentSearches, setRecentSearches] = useState(['oversized t-shirt', 'cargo pants', 'sneakers']);
+    const [recentSearches, setRecentSearches] = useState(['-shirt', 'cargo pants', 'sneakers']);
     const trendingSearches = ['Summer Collection', 'Black Hoodie', 'Baggy Jeans', 'Varsity Jacket'];
 
     if (!isOpen) return null;

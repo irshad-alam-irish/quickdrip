@@ -115,33 +115,18 @@ export const navigation = {
       ],
     },
     {
-        id: 'home',
-        name: 'HOME & LIVING',
+        id: 'accessories',
+        name: 'ACCESSORIES',
         sections: [
             {
-                id: 'decor',
-                name: 'Home Décor',
+                id: 'all-accessories',
+                name: 'All Accessories',
                 items: [
-                    { name: 'Plants & Planters', href: '#' },
-                    { name: 'Aromas & Candles', href: '#' },
-                    { name: 'Clocks', href: '#' },
-                    { name: 'Mirrors', href: '#' }, 
-                ]
-            }
-        ]
-    },
-    {
-        id: 'beauty',
-        name: 'BEAUTY',
-        sections: [
-            {
-                id: 'makeup',
-                name: 'Makeup',
-                items: [
-                    { name: 'Lipstick', href: '#' },
-                    { name: 'Lip Gloss', href: '#' },
-                    { name: 'Lip Liner', href: '#' },
-                    { name: 'Mascara', href: '#' }, 
+                    { name: 'Watches', href: '/products?category=Accessories&subcategory=Watches' },
+                    { name: 'Belts', href: '/products?category=Accessories&subcategory=Belts' },
+                    { name: 'Wallets', href: '/products?category=Accessories&subcategory=Wallets' },
+                    { name: 'Jewelry', href: '/products?category=Accessories&subcategory=Jewelry' }, 
+                    { name: 'Sunglasses', href: '/products?category=Accessories&subcategory=Sunglasses' },
                 ]
             }
         ]

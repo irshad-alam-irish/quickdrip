@@ -10,7 +10,7 @@ import ProductModal from '../components/ProductModal';
 import Footer from '../components/Footer';
 import ViewMoreCard from '../components/ViewMoreCard';
 import BrandInfoCard from '../components/BrandInfoCard';
-import { productAPI } from '../services/api';
+import { productAPI, collectionAPI } from '../services/api';
 
 export default function HomePage() {
     const [selectedProduct, setSelectedProduct] = useState(null);
@@ -24,15 +24,16 @@ export default function HomePage() {
             try {
                 setLoading(true);
                 // Fetch different sets of products for different sections
-                const [drops, fast, party] = await Promise.all([
-                    productAPI.getFeaturedProducts(), // Featured drops
-                    productAPI.getProductsByFeature('super-fast'), // Fast delivery
-                    productAPI.getProductsByFeature('party-ready') // Party ready
+                const [dropsData, fastData, merchData] = await Promise.all([
+                    collectionAPI.getFeaturedDrops(),
+                    collectionAPI.getSuperfastDelivery(),
+                    collectionAPI.getOfficialMerch()
                 ]);
 
-                setFeaturedDrops(drops);
-                setFastDeliveryProducts(fast);
-                setPartyProducts(party);
+                // Map response to extract product object
+                setFeaturedDrops(dropsData.map(item => item.product));
+                setFastDeliveryProducts(fastData.map(item => item.product));
+                setPartyProducts(merchData.map(item => item.product)); // Reusing party state for official merch
             } catch (error) {
                 console.error('Failed to fetch products:', error);
             } finally {
@@ -177,9 +178,9 @@ export default function HomePage() {
             {/* Party Ready Curation */}
             <section className="py-8 bg-black">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 mb-6">
-                    <span className="text-purple-400 font-bold tracking-widest uppercase text-xs block mb-1">Tonight's Vibe</span>
+                    <span className="text-purple-400 font-bold tracking-widest uppercase text-xs block mb-1">Quickdrip Originals</span>
                     <h2 className="text-3xl md:text-4xl font-black uppercase tracking-tighter text-white">
-                        Party Ready <span className="text-transparent stroke-text" style={{ WebkitTextStroke: '1px white' }}>in 15 Mins</span>
+                        Official <span className="text-transparent stroke-text" style={{ WebkitTextStroke: '1px white' }}>Merch</span>
                     </h2>
                 </div>
                 <div className="flex overflow-x-auto space-x-6 px-4 sm:px-6 lg:px-10 pb-8 no-scrollbar snap-x snap-mandatory">
@@ -206,7 +207,7 @@ export default function HomePage() {
                     <div className="min-w-[200px] md:min-w-[260px] snap-start">
                         <ViewMoreCard
                             to="/products/all"
-                            label="View Party Wear"
+                            label="View Official Merch"
                             darkMode={true}
                         />
                     </div>
